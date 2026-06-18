@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#5C3D2E" />
+
+  <!-- ════════════════════════════════════════════════
+       SEO & Open Graph — edit these for your link preview
+       (WhatsApp / Telegram / iMessage all read these tags)
+  ════════════════════════════════════════════════ -->
+  <title>Kawany &amp; [Enrolado] — 1 Ano Juntos 🤎</title>
+  <meta name="description" content="[Time do vasco]" />
+
+  <!-- Open Graph (link preview card) -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="Kawany &amp; [Enrolado] — 1 Ano Juntos 🤎" />
+  <meta property="og:description" content="[Time do vasco]" />
+  <meta property="og:image"       content="assets/photos/og-cover.webp" />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale"      content="pt_BR" />
+
+  <!-- Twitter/X card (also used by some apps) -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Kawany &amp; [Enrolado] — 1 Ano Juntos" />
+  <meta name="twitter:description" content="[Time do vasco]" />
+  <meta name="twitter:image"       content="assets/photos/og-cover.webp" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+  <!-- ════════════════════════════════════════════════
+       Google Fonts — the only external dependency
+       Cormorant Garamond: romantic display/heading font
+       Jost: clean, modern body font
+  ════════════════════════════════════════════════ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Great+Vibes&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════════════════════════
+       01 · INTRO / REVEAL SCREEN
+       A full-screen "envelope" that hides everything until clicked.
+       The `inert` attribute removes all children from tab/focus
+       order while the cover is visible — re-enabled on open.
+  ════════════════════════════════════════════════════════════════ -->
+  <div id="intro-cover" role="dialog" aria-modal="true" aria-label="Abrir site de aniversário">
+    <div class="intro-envelope">
+      <!-- Decorative floating hearts around the envelope -->
+      <span class="env-heart" aria-hidden="true">🤍</span>
+      <span class="env-heart" aria-hidden="true">🤎</span>
+      <span class="env-heart" aria-hidden="true">🍂</span>
+
+      <div class="intro-envelope__flap" aria-hidden="true"></div>
+      <div class="intro-envelope__body">
+        <p class="intro-label">para você,</p>
+        <h1 class="intro-names">[Enrolado]</h1>
+        <p class="intro-subtitle">com todo o meu amor</p>
+      </div>
+    </div>
+
+    <button id="open-btn" class="btn-open" aria-label="Abrir carta de aniversário">
+      <span class="btn-open__text">Abrir ✉</span>
+      <span class="btn-open__ripple" aria-hidden="true"></span>
+    </button>
+
+    <p class="intro-hint" aria-hidden="true">toque para abrir</p>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       MAIN CONTENT — hidden (inert) until intro is dismissed
+  ════════════════════════════════════════════════════════════════ -->
+  <main id="main-content" inert aria-label="Conteúdo do site de aniversário">
+
+    <!-- ──────────────────────────────────────────────
+         02 · HERO SECTION
+    ────────────────────────────────────────────── -->
+    <section id="hero" class="hero" aria-labelledby="hero-names">
+      <!-- Animated background particles (CSS + JS) -->
+      <div class="hero__particles" aria-hidden="true" id="hero-particles"></div>
+
+      <!-- Floating gradient orbs for depth -->
+      <div class="hero__orb hero__orb--1" aria-hidden="true"></div>
+      <div class="hero__orb hero__orb--2" aria-hidden="true"></div>
+
+      <div class="hero__content">
+        <p class="hero__eyebrow reveal-fade">um ano de nós</p>
+
+        <h1 id="hero-names" class="hero__names reveal-fade">
+          Kawany <span class="hero__ampersand">&amp;</span> [Enrolado]
+        </h1>
+
+        <div class="hero__divider reveal-fade" aria-hidden="true">
+          <span></span><span class="hero__heart">🤎</span><span></span>
+        </div>
+
+        <p class="hero__opening reveal-fade">[Time do vasco]</p>
+
+        <time class="hero__date reveal-fade" datetime="2025-07-19">
+          desde 2025-07-19
+        </time>
+      </div>
+
+      <!-- Scroll cue -->
+      <a href="#counter" class="hero__scroll-cue" aria-label="Role para baixo">
+        <span class="hero__scroll-arrow" aria-hidden="true"></span>
+      </a>
+    </section>
+
+    <!-- ──────────────────────────────────────────────
+         03 · LIVE COUNTER
+    ────────────────────────────────────────────── -->
+    <section id="counter" class="counter" aria-labelledby="counter-heading">
+      <div class="section-inner">
+        <h2 id="counter-heading" class="section-title reveal-up">
+          <em>juntos há</em>
+        </h2>
+
+        <!-- Each counter unit is a live region so screen readers announce updates -->
+        <div class="counter__grid" aria-live="polite" aria-atomic="true" role="timer">
+          <div class="counter__unit reveal-up" style="--delay:0.0s">
+            <span class="counter__number" id="cnt-years">0</span>
+            <span class="counter__label">anos</span>
+          </div>
+          <div class="counter__unit reveal-up" style="--delay:0.1s">
+            <span class="counter__number" id="cnt-months">0</span>
+            <span class="counter__label">meses</span>
+          </div>
+          <div class="counter__unit reveal-up" style="--delay:0.2s">
+            <span class="counter__number" id="cnt-days">0</span>
+            <span class="counter__label">dias</span>
+          </div>
+          <div class="counter__unit reveal-up" style="--delay:0.3s">
+            <span class="counter__number" id="cnt-hours">0</span>
+            <span class="counter__label">horas</span>
+          </div>
+          <div class="counter__unit reveal-up" style="--delay:0.4s">
+            <span class="counter__number" id="cnt-mins">00</span>
+            <span class="counter__label">minutos</span>
+          </div>
+          <div class="counter__unit reveal-up" style="--delay:0.5s">
+            <span class="counter__number" id="cnt-secs">00</span>
+            <span class="counter__label">segundos</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────────
+         04 · TIMELINE
+    ────────────────────────────────────────────── -->
+    <section id="timeline" class="timeline" aria-labelledby="timeline-heading">
+      <div class="section-inner">
+        <h2 id="timeline-heading" class="section-title reveal-up">
+          <em>nossa história</em>
+        </h2>
+        <p class="section-subtitle reveal-up">momentos que guardaremos para sempre</p>
+
+        <div class="timeline__track" role="list">
+
+          <!--
+            MILESTONE TEMPLATE — duplicate this block for each milestone.
+            Fill in: datetime (ISO), the display date text, photo path, alt text, caption.
+            Photos go in assets/photos/ — recommend 800×600 px WebP.
+          -->
+
+          <article class="timeline__item reveal-left" role="listitem">
+            <div class="timeline__photo-wrap">
+              <img
+                src="assets/photos/milestone-1.webp"
+                alt="[Descrição da foto do primeiro encontro]"
+                class="timeline__photo"
+                loading="lazy"
+                width="800" height="600"
+              />
+            </div>
+            <div class="timeline__content">
+              <time class="timeline__date" datetime="2025-07-19">2025-07-19</time>
+              <h3 class="timeline__title">Nosso primeiro encontro</h3>
+              <p class="timeline__caption">
+                [TIMELINE_MILESTONES — caption 1]
+              </p>
+            </div>
+          </article>
+
+          <article class="timeline__item timeline__item--right reveal-right" role="listitem">
+            <div class="timeline__photo-wrap">
+              <img
+                src="assets/photos/milestone-2.webp"
+                alt="[Descrição da foto do marco 2]"
+                class="timeline__photo"
+                loading="lazy"
+                width="800" height="600"
+              />
+            </div>
+            <div class="timeline__content">
+              <time class="timeline__date" datetime="[MILESTONE_2_DATE]">[MILESTONE_2_DATE]</time>
+              <h3 class="timeline__title">Marco 2</h3>
+              <p class="timeline__caption">
+                [TIMELINE_MILESTONES — caption 2]
+              </p>
+            </div>
+          </article>
+
+          <article class="timeline__item reveal-left" role="listitem">
+            <div class="timeline__photo-wrap">
+              <img
+                src="assets/photos/milestone-3.webp"
+                alt="[Descrição da foto do marco 3]"
+                class="timeline__photo"
+                loading="lazy"
+                width="800" height="600"
+              />
+            </div>
+            <div class="timeline__content">
+              <time class="timeline__date" datetime="[MILESTONE_3_DATE]">[MILESTONE_3_DATE]</time>
+              <h3 class="timeline__title">Marco 3</h3>
+              <p class="timeline__caption">
+                [TIMELINE_MILESTONES — caption 3]
+              </p>
+            </div>
+          </article>
+
+          <!-- Add as many <article class="timeline__item"> blocks as you need -->
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────────
+         05 · PHOTO GALLERY
+    ────────────────────────────────────────────── -->
+    <section id="gallery" class="gallery" aria-labelledby="gallery-heading">
+      <div class="section-inner">
+        <h2 id="gallery-heading" class="section-title reveal-up">
+          <em>galeria</em>
+        </h2>
+        <p class="section-subtitle reveal-up">clique para ampliar</p>
+
+        <!--
+          GALLERY GRID
+          Add as many <figure> items as you like.
+          data-src  = full-resolution image for lightbox
+          data-caption = optional caption shown in lightbox
+        -->
+        <div class="gallery__grid" id="gallery-grid" role="list">
+
+          <figure class="gallery__item reveal-fade" role="listitem">
+            <button
+              class="gallery__btn"
+              aria-label="Abrir foto 1 em tamanho completo"
+              data-index="0"
+            >
+              <img
+                src="assets/photos/gallery-1.webp"
+                data-src="assets/photos/gallery-1.webp"
+                data-caption="[Legenda da foto 1]"
+                alt="[Descrição da foto 1]"
+                class="gallery__img"
+                loading="lazy"
+                width="600" height="400"
+              />
+            </button>
+          </figure>
+
+          <figure class="gallery__item reveal-fade" role="listitem">
+            <button
+              class="gallery__btn"
+              aria-label="Abrir foto 2 em tamanho completo"
+              data-index="1"
+            >
+              <img
+                src="assets/photos/gallery-2.webp"
+                data-src="assets/photos/gallery-2.webp"
+                data-caption="[Legenda da foto 2]"
+                alt="[Descrição da foto 2]"
+                class="gallery__img"
+                loading="lazy"
+                width="600" height="400"
+              />
+            </button>
+          </figure>
+
+          <figure class="gallery__item reveal-fade" role="listitem">
+            <button
+              class="gallery__btn"
+              aria-label="Abrir foto 3 em tamanho completo"
+              data-index="2"
+            >
+              <img
+                src="assets/photos/gallery-3.webp"
+                data-src="assets/photos/gallery-3.webp"
+                data-caption="[Legenda da foto 3]"
+                alt="[Descrição da foto 3]"
+                class="gallery__img"
+                loading="lazy"
+                width="600" height="400"
+              />
+            </button>
+          </figure>
+
+          <figure class="gallery__item reveal-fade" role="listitem">
+            <button
+              class="gallery__btn"
+              aria-label="Abrir foto 4 em tamanho completo"
+              data-index="3"
+            >
+              <img
+                src="assets/photos/gallery-4.webp"
+                data-src="assets/photos/gallery-4.webp"
+                data-caption="[Legenda da foto 4]"
+                alt="[Descrição da foto 4]"
+                class="gallery__img"
+                loading="lazy"
+                width="600" height="400"
+              />
+            </button>
+          </figure>
+
+          <figure class="gallery__item reveal-fade" role="listitem">
+            <button
+              class="gallery__btn"
+              aria-label="Abrir foto 5 em tamanho completo"
+              data-index="4"
+            >
+              <img
+                src="assets/photos/gallery-5.webp"
+                data-src="assets/photos/gallery-5.webp"
+                data-caption="[Legenda da foto 5]"
+                alt="[Descrição da foto 5]"
+                class="gallery__img"
+                loading="lazy"
+                width="600" height="400"
+              />
+            </button>
+          </figure>
+
+          <figure class="gallery__item reveal-fade" role="listitem">
+            <button
+              class="gallery__btn"
+              aria-label="Abrir foto 6 em tamanho completo"
+              data-index="5"
+            >
+              <img
+                src="assets/photos/gallery-6.webp"
+                data-src="assets/photos/gallery-6.webp"
+                data-caption="[Legenda da foto 6]"
+                alt="[Descrição da foto 6]"
+                class="gallery__img"
+                loading="lazy"
+                width="600" height="400"
+              />
+            </button>
+          </figure>
+
+          <!-- Add more <figure class="gallery__item"> blocks as needed -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────────
+         06 · LOVE LETTER
+    ────────────────────────────────────────────── -->
+    <section id="letter" class="letter" aria-labelledby="letter-heading">
+      <div class="section-inner letter__inner">
+        <div class="letter__paper reveal-up">
+          <!-- Decorative wax seal -->
+          <div class="letter__seal" aria-hidden="true">🤎</div>
+
+          <h2 id="letter-heading" class="letter__heading">
+            Para você,
+          </h2>
+
+          <!--
+            The letter text is revealed character-by-character when the section
+            enters the viewport (typewriter effect, handled in script.js).
+            Replace [casa com ela logo cara] with your message.
+            You can use <br> for line breaks inside the text.
+          -->
+          <div class="letter__body" id="letter-body" aria-label="Carta de amor">
+            <p class="letter__text" id="letter-text" data-typewriter>
+              [casa com ela logo cara]
+            </p>
+          </div>
+
+          <p class="letter__signature">
+            Com todo o meu amor,<br/>
+            <strong>Kawany</strong>
+          </p>
+
+          <!-- Decorative corner flourishes -->
+          <span class="letter__corner letter__corner--tl" aria-hidden="true"></span>
+          <span class="letter__corner letter__corner--tr" aria-hidden="true"></span>
+          <span class="letter__corner letter__corner--bl" aria-hidden="true"></span>
+          <span class="letter__corner letter__corner--br" aria-hidden="true"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────────
+         07 · FOOTER + NEXT ANNIVERSARY COUNTDOWN
+    ────────────────────────────────────────────── -->
+    <footer class="site-footer" role="contentinfo">
+      <div class="footer__inner">
+        <p class="footer__names">
+          Kawany <span aria-hidden="true">🤎</span> [Enrolado]
+        </p>
+        <p class="footer__date" id="footer-start-date">2025-07-19</p>
+
+        <!-- Next anniversary countdown -->
+        <div class="footer__next-anniversary">
+          <p class="footer__next-label">próximo aniversário em</p>
+          <p class="footer__next-counter" id="next-anniversary-counter" aria-live="polite">
+            calculando…
+          </p>
+        </div>
+
+        <p class="footer__credit">
+          feito com 🤎 por Kawany
+        </p>
+      </div>
+
+      <!-- Floating ambient leaves -->
+      <div class="footer__leaves" aria-hidden="true">
+        <span>🍂</span><span>🍁</span><span>🍂</span>
+      </div>
+    </footer>
+
+  </main><!-- /main-content -->
+
+  <!-- ════════════════════════════════════════════════════════════
+       LIGHTBOX — portal overlay for the photo gallery
+       Using native <dialog> for correct focus-trap, Esc key,
+       and accessibility semantics out of the box.
+  ════════════════════════════════════════════════════════════════ -->
+  <dialog
+    id="lightbox"
+    class="lightbox"
+    aria-label="Visualizador de fotos"
+    aria-modal="true"
+  >
+    <div class="lightbox__inner">
+      <!-- Previous photo button -->
+      <button
+        class="lightbox__nav lightbox__nav--prev"
+        id="lb-prev"
+        aria-label="Foto anterior"
+      >&#8592;</button>
+
+      <!-- Photo container -->
+      <figure class="lightbox__figure">
+        <img
+          id="lb-img"
+          class="lightbox__img"
+          src=""
+          alt=""
+          width="1200"
+          height="800"
+        />
+        <figcaption id="lb-caption" class="lightbox__caption"></figcaption>
+      </figure>
+
+      <!-- Next photo button -->
+      <button
+        class="lightbox__nav lightbox__nav--next"
+        id="lb-next"
+        aria-label="Próxima foto"
+      >&#8594;</button>
+
+      <!-- Close button -->
+      <button
+        class="lightbox__close"
+        id="lb-close"
+        aria-label="Fechar visualizador"
+      >&#10005;</button>
+    </div>
+  </dialog>
+
+  <!-- ════════════════════════════════════════════════════════════
+       MUSIC PLAYER — discreet floating button
+       No autoplay with sound (browsers block it by policy).
+       The button only appears after the user interacts with the page.
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="music-player" id="music-player" aria-label="Controle de música" role="region">
+    <button
+      class="music-btn"
+      id="music-btn"
+      aria-label="Tocar música de fundo"
+      aria-pressed="false"
+    >
+      <span class="music-btn__icon music-btn__icon--play" aria-hidden="true">♪</span>
+      <span class="music-btn__icon music-btn__icon--pause" aria-hidden="true">⏸</span>
+      <!-- Animated bars shown while playing -->
+      <span class="music-btn__bars" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </span>
+    </button>
+
+    <!--
+      Add your music file to assets/music/
+      Supported: mp3, ogg, aac
+      Recommended: ~2-4 min instrumental, ≤3 MB
+    -->
+    <audio id="bg-audio" loop preload="none">
+      <source src="assets/music/background.mp3" type="audio/mpeg" />
+      <source src="assets/music/background.ogg" type="audio/ogg" />
+    </audio>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
