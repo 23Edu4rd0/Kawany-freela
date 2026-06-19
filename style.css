@@ -50,8 +50,8 @@
   --radius-md:   1rem;
   --radius-lg:   2rem;
 
-  /* Scroll-animation initial state */
-  --reveal-distance: 40px;
+  /* Scroll-animation initial state — menor no mobile (sobrescrito abaixo) */
+  --reveal-distance: 24px;
 }
 
 /* ─────────────────────────────────────────────
@@ -147,7 +147,7 @@ img {
     transform var(--dur-slow) var(--ease-smooth);
   /* Honour the --delay CSS variable set inline on some elements */
   transition-delay: var(--delay, 0s);
-  will-change: opacity, transform;
+  /* will-change apenas quando necessário — não declarar em massa */
 }
 
 .reveal-up    { transform: translateY(var(--reveal-distance)); }
@@ -205,6 +205,8 @@ img {
   display: flex;
   align-items: flex-end;
   overflow: visible;
+  perspective: 1000px; /* Habilita efeito 3D para a aba */
+  transform-style: preserve-3d;
   animation: envelope-float 4s ease-in-out infinite;
 }
 
@@ -222,6 +224,13 @@ img {
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   border-radius: var(--radius-md) var(--radius-md) 0 0;
   z-index: 2;
+  transform-origin: top;
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Quando abrindo, a aba gira 180 graus para cima */
+.intro-envelope.is-opening .intro-envelope__flap {
+  transform: rotateX(180deg);
 }
 
 .intro-envelope__body {
@@ -230,6 +239,15 @@ img {
   width: 100%;
   padding: var(--space-md) var(--space-lg) var(--space-lg);
   text-align: center;
+  opacity: 0; /* Começa invisível para ocultar o texto antes de abrir */
+  transform: translateY(25px); /* Posição inicial levemente abaixo */
+  transition: opacity 0.8s var(--ease-smooth) 0.2s, transform 0.8s var(--ease-smooth) 0.2s; /* Atraso leve para dar tempo da aba começar a abrir */
+}
+
+/* Quando abrindo, o texto interno surge deslizando para cima */
+.intro-envelope.is-opening .intro-envelope__body {
+  opacity: 1;
+  transform: translateY(-8px);
 }
 
 .intro-label {
@@ -288,7 +306,7 @@ img {
   letter-spacing: 0.06em;
   cursor: pointer;
   overflow: hidden;
-  transition: border-color var(--dur-fast), background var(--dur-fast);
+  transition: border-color var(--dur-fast), background var(--dur-fast), opacity var(--dur-med) var(--ease-smooth), transform var(--dur-med) var(--ease-smooth);
 }
 
 .btn-open:hover,
@@ -318,6 +336,21 @@ img {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   animation: hint-blink 2.5s ease-in-out infinite;
+  transition: opacity var(--dur-med) var(--ease-smooth), transform var(--dur-med) var(--ease-smooth);
+}
+
+/* Quando abrindo o envelope, some com o botão e com a dica de toque */
+#intro-cover.is-opening-envelope .btn-open {
+  opacity: 0 !important;
+  transform: scale(0.9);
+  pointer-events: none;
+}
+
+#intro-cover.is-opening-envelope .intro-hint {
+  animation: none; /* Desativa animação de piscar para respeitar o opacity: 0 */
+  opacity: 0 !important;
+  transform: translateY(10px);
+  pointer-events: none;
 }
 @keyframes hint-blink {
   0%, 100% { opacity: 0.4; }
@@ -349,26 +382,43 @@ img {
 }
 
 /* ── Animated gradient orbs ── */
+/* Em mobile desativamos o blur pesado — apenas a cor base fica */
 .hero__orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(60px);
   pointer-events: none;
-  opacity: 0.45;
-  animation: orb-drift 12s ease-in-out infinite alternate;
+  opacity: 0.3;
+  /* Sem animação nem blur no mobile — adicionados no breakpoint ≥768px */
 }
 .hero__orb--1 {
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, #C0714F55, transparent 70%);
-  top: -120px; right: -100px;
-  animation-duration: 14s;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, #C0714F44, transparent 70%);
+  top: -80px; right: -60px;
 }
 .hero__orb--2 {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, #7D554455, transparent 70%);
-  bottom: -80px; left: -60px;
-  animation-duration: 10s;
-  animation-delay: -4s;
+  width: 250px; height: 250px;
+  background: radial-gradient(circle, #7D554433, transparent 70%);
+  bottom: -60px; left: -40px;
+}
+
+/* Orbs completos apenas em telas maiores, onde a GPU aguenta */
+@media (min-width: 768px) {
+  .hero__orb {
+    filter: blur(60px);
+    opacity: 0.45;
+    animation: orb-drift 12s ease-in-out infinite alternate;
+  }
+  .hero__orb--1 {
+    width: 500px; height: 500px;
+    top: -120px; right: -100px;
+    animation-duration: 14s;
+  }
+  .hero__orb--2 {
+    width: 400px; height: 400px;
+    bottom: -80px; left: -60px;
+    animation-duration: 10s;
+    animation-delay: -4s;
+  }
 }
 @keyframes orb-drift {
   from { transform: translate(0, 0) scale(1);      }
@@ -386,16 +436,18 @@ img {
 /* Each particle is a <span> injected by script.js */
 .particle {
   position: absolute;
+  width: var(--sz, 1rem);
+  height: var(--sz, 1rem);
   font-size: var(--sz, 1rem);
   opacity: 0;
+  /* Sem rotate() — apenas translate é composto pelo GPU sem repaint */
   animation: particle-rise var(--dur, 8s) var(--delay, 0s) ease-in infinite;
-  will-change: transform, opacity;
 }
 @keyframes particle-rise {
-  0%   { transform: translateY(100vh) rotate(0deg);   opacity: 0;   }
-  10%  { opacity: 0.7; }
-  90%  { opacity: 0.4; }
-  100% { transform: translateY(-20vh) rotate(360deg); opacity: 0;   }
+  0%   { transform: translateY(80px);   opacity: 0;   }
+  15%  { opacity: 0.6; }
+  85%  { opacity: 0.3; }
+  100% { transform: translateY(-100vh); opacity: 0;   }
 }
 
 /* ── Hero copy ── */
@@ -424,6 +476,7 @@ img {
   color: var(--clr-brown);
   font-weight: 400;
   line-height: 1.05;
+  text-align: center;
 }
 
 .hero__ampersand {
@@ -434,6 +487,14 @@ img {
 @keyframes amp-pulse {
   0%, 100% { transform: scale(1);    }
   50%       { transform: scale(1.08); }
+}
+
+@media (max-width: 576px) {
+  .hero__ampersand {
+    display: block;
+    margin: 0.15em 0;
+    text-align: center;
+  }
 }
 
 .hero__divider {
@@ -555,19 +616,18 @@ img {
 
 .counter__number {
   font-family: var(--font-serif);
-  font-size: clamp(2.4rem, 7vw, 3.5rem);
+  font-size: clamp(2rem, 7vw, 3.5rem);
   font-weight: 300;
   color: #fff;
   line-height: 1;
   letter-spacing: -0.02em;
-  /* Subtle shimmer animation on the numbers */
-  animation: num-shimmer 3s ease-in-out infinite alternate;
+  /* text-shadow animado só em desktop — caro no mobile */
 }
 
-.counter__unit:nth-child(5) .counter__number,
-.counter__unit:nth-child(6) .counter__number {
-  /* Seconds / minutes pulse faster to draw attention */
-  color: var(--clr-terra-lt);
+@media (min-width: 768px) {
+  .counter__number {
+    animation: num-shimmer 3s ease-in-out infinite alternate;
+  }
 }
 
 @keyframes num-shimmer {
@@ -633,12 +693,13 @@ img {
     gap: var(--space-xl);
   }
 
-  /* Right-side items: reverse column order so content is on the right */
+  /* Right-side items: inverte a ordem das colunas sem usar direction:rtl
+     (rtl causava bugs de rendering em alguns Androids) */
   .timeline__item--right {
-    direction: rtl; /* cheap mirror trick */
+    grid-template-columns: 1fr 1fr;
   }
-  .timeline__item--right > * {
-    direction: ltr; /* restore text direction inside children */
+  .timeline__item--right .timeline__content {
+    order: -1; /* conteúdo vem primeiro, foto fica à direita */
   }
 
   /* Dot on the center line */
@@ -770,9 +831,14 @@ img {
   object-fit: cover;
   transition: transform var(--dur-slow) var(--ease-smooth);
 }
-.gallery__btn:hover .gallery__img,
-.gallery__btn:focus-visible .gallery__img {
-  transform: scale(1.06);
+/* Hover zoom só funciona em dispositivos com mouse/trackpad;
+   em touch os estados :hover ficam "presos" até o próximo tap —
+   por isso só ativamos em telas que suportam hover real */
+@media (hover: hover) {
+  .gallery__btn:hover .gallery__img,
+  .gallery__btn:focus-visible .gallery__img {
+    transform: scale(1.06);
+  }
 }
 
 /* ─────────────────────────────────────────────
@@ -791,9 +857,15 @@ img {
 
 /* Backdrop behind the dialog */
 .lightbox::backdrop {
-  background: rgba(20, 10, 5, 0.92);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(20, 10, 5, 0.94);
+  /* backdrop-filter: blur só em desktop — em mobile Android causa lag */
+}
+
+@media (min-width: 768px) {
+  .lightbox::backdrop {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
 }
 
 .lightbox[open] {
@@ -935,21 +1007,136 @@ img {
       rgba(192,113,79,0.04) 0%,
       transparent 50%
     );
+  transition: all 0.8s var(--ease-smooth);
+  overflow: hidden;
+}
+
+/* ESTADO FECHADO (ENVELOPE VINTAGE) */
+.letter__paper.letter__paper--closed {
+  max-width: 500px;
+  min-height: 280px;
+  cursor: pointer;
+  border: 1px dashed rgba(192, 113, 79, 0.35);
+  box-shadow:
+    0 6px 15px rgba(59,35,20,0.06),
+    0 25px 60px rgba(59,35,20,0.12);
+}
+
+.letter__paper.letter__paper--closed:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow:
+    0 12px 25px rgba(59,35,20,0.08),
+    0 35px 80px rgba(59,35,20,0.16);
+}
+
+/* CAPA DA CARTA FECHADA */
+.letter__cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  z-index: 10;
+  text-align: center;
+  transition: opacity 0.6s var(--ease-smooth), transform 0.6s var(--ease-smooth);
+}
+
+.letter__paper.letter__paper--open .letter__cover {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.95);
+  pointer-events: none;
+}
+
+/* Sêlo de cera animado */
+.letter__cover-seal {
+  font-size: 3.5rem;
+  margin-bottom: var(--space-md);
+  cursor: pointer;
+  user-select: none;
+  animation: seal-pulse-scale 2.5s ease-in-out infinite;
+}
+
+@keyframes seal-pulse-scale {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 2px 8px rgba(192, 113, 79, 0.35));
+  }
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 6px 18px rgba(192, 113, 79, 0.65));
+  }
+}
+
+.letter__cover-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 4vw, 1.6rem);
+  color: var(--clr-brown);
+  margin-bottom: var(--space-md);
+  font-weight: 400;
+}
+
+.letter__cover-btn {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  background-color: var(--clr-terra);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 0.75rem 1.75rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(192,113,79,0.3);
+  transition: all 0.3s ease;
+}
+
+.letter__cover-btn:hover {
+  background-color: var(--clr-brown);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59,35,20,0.4);
+}
+
+/* CONTEÚDO DA CARTA (REVELADO AO ABRIR) */
+.letter__content {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s var(--ease-smooth) 0.15s, transform 0.8s var(--ease-smooth) 0.15s;
+}
+
+.letter__paper.letter__paper--open .letter__content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Ocultar cantos decorativos e elementos extras enquanto fechado */
+.letter__paper.letter__paper--closed .letter__corner {
+  opacity: 0;
 }
 
 /* Decorative corner flourishes */
 .letter__corner {
   position: absolute;
-  width: 30px;
-  height: 30px;
-  border-color: var(--clr-brown-lt);
-  border-style: solid;
-  opacity: 0.4;
+  width: 45px; /* Ligeiramente maior para mostrar os detalhes do arabesco */
+  height: 45px;
+  color: #C6A97A; /* Cor ouro envelhecido, suave e puxando pro marrom */
+  opacity: 0.7;
+  transition: opacity var(--dur-med) var(--ease-smooth);
 }
-.letter__corner--tl { top: 14px; left: 14px;  border-width: 2px 0 0 2px; border-radius: var(--radius-sm) 0 0 0; }
-.letter__corner--tr { top: 14px; right: 14px;  border-width: 2px 2px 0 0; border-radius: 0 var(--radius-sm) 0 0; }
-.letter__corner--bl { bottom: 14px; left: 14px;  border-width: 0 0 2px 2px; border-radius: 0 0 0 var(--radius-sm); }
-.letter__corner--br { bottom: 14px; right: 14px; border-width: 0 2px 2px 0; border-radius: 0 0 var(--radius-sm) 0; }
+.letter__corner svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.letter__corner--tl { top: 14px; left: 14px; }
+.letter__corner--tr { top: 14px; right: 14px; transform: rotate(90deg); }
+.letter__corner--bl { bottom: 14px; left: 14px; transform: rotate(270deg); }
+.letter__corner--br { bottom: 14px; right: 14px; transform: rotate(180deg); }
 
 /* Wax seal */
 .letter__seal {
@@ -1203,4 +1390,21 @@ img {
 @keyframes music-pulse {
   0%   { opacity: 0.6; transform: scale(1);    }
   100% { opacity: 0;   transform: scale(1.5);  }
+}
+
+/* Dividores ornamentais clássicos */
+.ornament-divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: var(--space-md) auto var(--space-lg);
+  max-width: min(320px, 80vw);
+  color: #C6A97A; /* Cor ouro envelhecido, suave e puxando pro marrom */
+  opacity: 0.75;
+}
+
+.ornament-divider svg {
+  width: 100%;
+  height: auto;
+  display: block;
 }

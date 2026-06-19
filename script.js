@@ -35,7 +35,7 @@ const CONFIG = {
 
   // Music file path (relative to the HTML file)
   // Leave empty string '' if you have no music file yet
-  musicSrc: 'assets/music/background.mp3',
+  musicSrc: 'assets/music/Um_Amor_Puro.mp3',
 };
 
 /* ──────────────────────────────────────────────────────────────────
@@ -72,34 +72,42 @@ function initIntro() {
 
   openBtn.addEventListener('click', openSite);
 
-  // Also allow tapping anywhere on the cover to open
+  // Permite clicar em qualquer lugar da tela de cobertura para abrir
   cover.addEventListener('click', (e) => {
-    // Only trigger if the click wasn't already on the button
-    // (avoids double-firing because button click bubbles up to cover)
+    // Evita conflitos de clique com o próprio botão
     if (e.target !== openBtn && !openBtn.contains(e.target)) {
       openSite();
     }
   });
 
   function openSite() {
-    // 1. Start CSS exit animation
-    cover.classList.add('is-leaving');
+    // Evita cliques duplos se já estiver saindo ou abrindo
+    if (cover.classList.contains('is-leaving') || cover.classList.contains('is-opening-envelope')) return;
 
-    // 2. Make main content accessible to keyboard and screen readers
-    main.removeAttribute('inert');
-
-    // 3. Start music player as ready (after user interaction)
-    //    Browsers require a user gesture before audio can play.
-    //    We mark the player visible here; actual playback is user-initiated.
-    const musicPlayer = document.getElementById('music-player');
-    if (musicPlayer) {
-      // Small delay so it appears after the cover leaves
-      setTimeout(() => musicPlayer.classList.add('is-ready'), 1000);
+    // 1. Inicia a animação de abertura (gira a aba, esconde botões e revela o texto interno)
+    cover.classList.add('is-opening-envelope');
+    const envelope = cover.querySelector('.intro-envelope');
+    if (envelope) {
+      envelope.classList.add('is-opening');
     }
 
-    // 4. Remove cover from DOM once animation finishes (~800ms)
-    //    `transitionend` fires when the CSS transition completes
-    cover.addEventListener('transitionend', () => cover.remove(), { once: true });
+    // 2. Remove o atributo 'inert' para que o site principal fique acessível
+    main.removeAttribute('inert');
+
+    // 3. Deixa o tocador de música pronto (após interação do usuário)
+    const musicPlayer = document.getElementById('music-player');
+    if (musicPlayer) {
+      // Pequeno atraso para aparecer sincronizado com a saída da tela de cobertura
+      setTimeout(() => musicPlayer.classList.add('is-ready'), 2200);
+    }
+
+    // 4. Aguarda a finalização da animação do envelope (2.2s) para sair com a tela de cobertura
+    setTimeout(() => {
+      cover.classList.add('is-leaving');
+      
+      // Remove o elemento da tela inteira após o término da transição CSS do cover
+      cover.addEventListener('transitionend', () => cover.remove(), { once: true });
+    }, 2200);
   }
 }
 
@@ -114,27 +122,42 @@ function initParticles() {
   const container = document.getElementById('hero-particles');
   if (!container) return;
 
-  // The symbols that will float upward
-  const symbols = ['🤍', '🤎', '🍂', '🍁', '✨', '🌿', '🌾'];
+  // Detecta se é mobile pela largura da tela.
+  // `window.matchMedia` é a forma correta — mais confiável que navigator.userAgent.
+  const isMobile = window.matchMedia('(max-width: 767px)').matches;
 
-  // Create 20 particles with randomized positions, sizes, and timing
-  for (let i = 0; i < 20; i++) {
+  // Em mobile usamos menos partículas para não sobrecarregar a GPU
+  const count   = isMobile ? 8 : 20;
+  
+  // Cores personalizadas mais escuras: marrom escuro (#54382F), roxo escuro (#4D126B) e vermelho bem escuro (#700F0F)
+  const colors = ['#54382F', '#4D126B', '#700F0F'];
+
+  for (let i = 0; i < count; i++) {
     const span = document.createElement('span');
     span.className = 'particle';
     span.setAttribute('aria-hidden', 'true');
-    span.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    
+    // Insere o coração SVG com uma das cores personalizadas
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    span.innerHTML = `<svg viewBox="0 0 24 24" fill="${color}" style="width: 100%; height: 100%; display: block;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
 
-    // CSS custom properties let us randomize directly from JS
-    // without needing separate JS animation loops (better performance)
-    const size    = (Math.random() * 0.8 + 0.6).toFixed(2);   // 0.6–1.4rem
-    const left    = (Math.random() * 95).toFixed(1);           // 0–95% horizontal
-    const delay   = (Math.random() * 8).toFixed(2);            // 0–8s delay
-    const dur     = (Math.random() * 6 + 7).toFixed(2);        // 7–13s duration
+    // Tamanho menor no mobile para reduzir área de repaint
+    const maxSize = isMobile ? 0.9 : 1.4;
+    const minSize = isMobile ? 0.5 : 0.6;
+    const size    = (Math.random() * (maxSize - minSize) + minSize).toFixed(2);
+    const left    = (Math.random() * 90).toFixed(1);   // 0–90% para não cortar nas bordas
+    const delay   = (Math.random() * 6).toFixed(2);    // 0–6s delay
+    // Mobile: duração menor (partículas sobem mais rápido = menos simultâneas)
+    const durMin  = isMobile ? 6  : 7;
+    const durMax  = isMobile ? 10 : 13;
+    const dur     = (Math.random() * (durMax - durMin) + durMin).toFixed(2);
 
     span.style.setProperty('--sz',    `${size}rem`);
     span.style.setProperty('--delay', `${delay}s`);
     span.style.setProperty('--dur',   `${dur}s`);
     span.style.left = `${left}%`;
+    // Posição vertical inicial aleatória no terço inferior da tela
+    span.style.bottom = `${Math.random() * 20}%`;
 
     container.appendChild(span);
   }
@@ -384,50 +407,90 @@ function initGallery() {
 ════════════════════════════════════════════════════════════════════ */
 function initTypewriter() {
   const letterEl = document.getElementById('letter-text');
-  if (!letterEl) return;
+  const paperEl = document.getElementById('love-letter-paper');
+  const openBtn = document.getElementById('letter-open-btn');
+  const coverEl = document.getElementById('letter-cover');
 
-  const fullText = letterEl.textContent;  // store the original text
-  letterEl.textContent = '';              // clear it so it starts empty
+  if (!letterEl || !paperEl || !openBtn) return;
 
-  let started = false;  // prevent the animation from firing twice
+  // Armazena o texto original (suportando tags HTML como <br>) e limpa o elemento
+  const fullText = letterEl.innerHTML;
+  letterEl.innerHTML = '';
 
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      if (entry.isIntersecting && !started) {
-        started = true;
-        observer.disconnect();  // no need to keep watching
-        typeNextChar(0);
+  let started = false; // Flag para evitar iniciar a digitação mais de uma vez
+
+  // Função responsável por abrir a carta e começar a digitação
+  function openLetter() {
+    if (started) return;
+    started = true;
+
+    // Transição de CSS: remove classe de fechado e adiciona de aberto
+    paperEl.classList.remove('letter__paper--closed');
+    paperEl.classList.add('letter__paper--open');
+
+    // Espera a animação de abertura (600ms) acabar antes de começar a digitar
+    setTimeout(() => {
+      if (coverEl) {
+        coverEl.style.display = 'none'; // Esconde a capa para não atrapalhar o leitor de tela
       }
-    },
-    { threshold: 0.4 }   // start when 40% of the element is visible
-  );
+      typeNextChar(0);
+    }, 600);
+  }
 
-  observer.observe(letterEl);
+  // Abre a carta ao clicar no botão "Abrir Carta"
+  openBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // Previne que o evento suba para o paperEl e cause dupla execução
+    openLetter();
+  });
 
+  // Também permite abrir clicando em qualquer parte da carta/envelope enquanto estiver fechado
+  paperEl.addEventListener('click', () => {
+    if (paperEl.classList.contains('letter__paper--closed')) {
+      openLetter();
+    }
+  });
+
+  // Acessibilidade: abre a carta ao focar no botão e apertar Enter ou Espaço
+  openBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openLetter();
+    }
+  });
+
+  // Função recursiva que digita caractere por caractere
   function typeNextChar(index) {
     if (index === 0) {
-      // Add blinking cursor at the start
-      letterEl.classList.add('is-typing');
+      letterEl.classList.add('is-typing'); // Exibe o cursor piscante
     }
 
     if (index >= fullText.length) {
-      // All characters typed — stop the cursor
-      letterEl.classList.remove('is-typing');
+      letterEl.classList.remove('is-typing'); // Remove o cursor
       letterEl.classList.add('is-done');
       return;
     }
 
-    // Append the next character
-    letterEl.textContent += fullText[index];
+    // Pula tags <br> e <br/> para inseri-las diretamente sem que o typewriter digite a tag literalmente
+    if (fullText.substring(index, index + 4) === '<br>') {
+      letterEl.innerHTML += '<br>';
+      setTimeout(() => typeNextChar(index + 4), CONFIG.typewriterSpeed * 6);
+      return;
+    }
+    if (fullText.substring(index, index + 5) === '<br/>') {
+      letterEl.innerHTML += '<br/>';
+      setTimeout(() => typeNextChar(index + 5), CONFIG.typewriterSpeed * 6);
+      return;
+    }
 
-    // Vary speed slightly for a more natural feel:
-    // punctuation and spaces get a longer pause
-    const char  = fullText[index];
+    // Insere o caractere atual no elemento
+    letterEl.innerHTML += fullText[index];
+
+    // Varia o tempo da digitação (pontuações causam pausas maiores para ser mais natural)
+    const char = fullText[index];
     const pause = /[.,!?;:\n]/.test(char)
-      ? CONFIG.typewriterSpeed * 6     // pause at punctuation
+      ? CONFIG.typewriterSpeed * 6     // pausa longa
       : CONFIG.typewriterSpeed;
 
-    // `setTimeout(fn, delay)` — schedule the next character
     setTimeout(() => typeNextChar(index + 1), pause);
   }
 }
