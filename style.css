@@ -44,6 +44,11 @@
   --dur-med:     400ms;
   --dur-slow:    700ms;
 
+  /* Scroll-reveal motion — separado do resto pra poder ser rápido sem
+     afetar hovers/carta/etc. que usam --dur-slow */
+  --dur-reveal:  380ms;
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1); /* expo-out: chega rápido, desacelera suave no fim */
+
   /* Layout */
   --max-w:       900px;
   --radius-sm:   0.5rem;
@@ -51,7 +56,7 @@
   --radius-lg:   2rem;
 
   /* Scroll-animation initial state — menor no mobile (sobrescrito abaixo) */
-  --reveal-distance: 24px;
+  --reveal-distance: 16px;
 }
 
 /* ─────────────────────────────────────────────
@@ -135,6 +140,12 @@ img {
    3. SCROLL-REVEAL ANIMATIONS
    Elements start hidden; JS adds .is-visible
    when they enter the viewport.
+
+   Tempo reduzido (--dur-reveal) + easing expo-out: a ideia é que a
+   transição termine ANTES (ou junto) do elemento ficar realmente
+   visível na tela — combinado com o rootMargin positivo no
+   IntersectionObserver (script.js), elimina a sensação de "atraso"
+   ao rolar rápido pra baixo.
 ───────────────────────────────────────────── */
 .reveal-fade,
 .reveal-up,
@@ -143,8 +154,8 @@ img {
   /* Initial (hidden) state */
   opacity: 0;
   transition:
-    opacity  var(--dur-slow) var(--ease-smooth),
-    transform var(--dur-slow) var(--ease-smooth);
+    opacity   var(--dur-reveal) var(--ease-reveal),
+    transform var(--dur-reveal) var(--ease-reveal);
   /* Honour the --delay CSS variable set inline on some elements */
   transition-delay: var(--delay, 0s);
   /* will-change apenas quando necessário — não declarar em massa */
