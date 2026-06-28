@@ -195,7 +195,7 @@ img {
 /* ── Envelope card ── */
 .intro-envelope {
   position: relative;
-  width: min(320px, 85vw);
+  width: min(360px, 90vw);
   aspect-ratio: 3 / 2;
   background: var(--clr-surface);
   border-radius: var(--radius-md);
@@ -253,26 +253,29 @@ img {
 .intro-label {
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: 0.85rem;
+  font-size: clamp(1rem, 3.5vw, 1.25rem);
   color: var(--clr-brown-md);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   margin-bottom: var(--space-xs);
+  text-align: center;
 }
 
 .intro-names {
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 8vw, 2.6rem);
+  font-size: clamp(2.8rem, 11vw, 4rem);
   color: var(--clr-brown);
   font-weight: 400;
   line-height: 1;
+  text-align: center;
 }
 
 .intro-subtitle {
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: 0.8rem;
+  font-size: clamp(0.9rem, 3vw, 1.1rem);
   color: var(--clr-text-muted);
   margin-top: var(--space-xs);
+  text-align: center;
 }
 
 /* Floating hearts around envelope */

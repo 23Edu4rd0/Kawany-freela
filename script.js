@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTypewriter();
   initMusicPlayer();
   initNextAnniversary();
+  loadAdminItems(); // Carrega itens adicionados pelo admin via LocalStorage
 });
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -94,14 +95,28 @@ function initIntro() {
     // 2. Remove o atributo 'inert' para que o site principal fique acessível
     main.removeAttribute('inert');
 
-    // 3. Deixa o tocador de música pronto (após interação do usuário)
+    // 3. Toca a música automaticamente ao clicar (já houve interação do usuário)
+    const audio = document.getElementById('bg-audio');
+    const musicBtn = document.getElementById('music-btn');
+    if (audio && musicBtn) {
+      audio.load(); // Garante que o arquivo está carregado
+      audio.play().then(() => {
+        musicBtn.setAttribute('aria-pressed', 'true');
+        musicBtn.setAttribute('aria-label', 'Pausar música de fundo');
+      }).catch(() => {
+        // Navegador pode bloquear; o botão flutuante ainda estará disponível
+        console.info('Autoplay bloqueado pelo navegador — use o botão de música.');
+      });
+    }
+
+    // 4. Deixa o tocador de música pronto (após interação do usuário)
     const musicPlayer = document.getElementById('music-player');
     if (musicPlayer) {
       // Pequeno atraso para aparecer sincronizado com a saída da tela de cobertura
       setTimeout(() => musicPlayer.classList.add('is-ready'), 2200);
     }
 
-    // 4. Aguarda a finalização da animação do envelope (2.2s) para sair com a tela de cobertura
+    // 5. Aguarda a finalização da animação do envelope (2.2s) para sair com a tela de cobertura
     setTimeout(() => {
       cover.classList.add('is-leaving');
       
@@ -588,4 +603,122 @@ function initNextAnniversary() {
 
   computeNext();
   setInterval(computeNext, 60_000);  // update every minute
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   9. ADMIN ITEMS — integração com LocalStorage
+   ─────────────────────────────────────────────────────────────────
+   Lê os itens salvos pela página admin.html no LocalStorage e os
+   renderiza dinamicamente na linha do tempo e/ou galeria do site.
+
+   Chave do LocalStorage: 'kawany_admin_items'
+   Estrutura de cada item (JSON):
+   {
+     id: string (timestamp único),
+     title: string,
+     description: string,
+     imageBase64: string (data:image/...;base64,...),
+     destination: 'timeline' | 'gallery' | 'both',
+     date: string (ISO date ou texto livre)
+   }
+════════════════════════════════════════════════════════════════════ */
+async function loadAdminItems() {
+  let items = [];
+  try {
+    // Busca os momentos da API do Vercel KV
+    const res = await fetch('/api/moments');
+    if (res.ok) {
+      items = await res.json();
+    } else {
+      console.warn('API de momentos retornou erro, usando LocalStorage de backup.');
+      const raw = localStorage.getItem('kawany_admin_items');
+      if (raw) items = JSON.parse(raw);
+    }
+  } catch (e) {
+    console.warn('Erro ao conectar com a API, usando LocalStorage de backup:', e);
+    const raw = localStorage.getItem('kawany_admin_items');
+    if (raw) items = JSON.parse(raw);
+  }
+
+  if (!items || !items.length) return;
+
+  const timelineTrack = document.querySelector('.timeline__track');
+  const galleryGrid   = document.getElementById('gallery-grid');
+
+  // Conta quantas fotos já existem na galeria para calcular o data-index correto
+  let galleryIndex = document.querySelectorAll('.gallery__item').length;
+
+  items.forEach((item, i) => {
+    const isTimeline = item.destination === 'timeline' || item.destination === 'both';
+    const isGallery  = item.destination === 'gallery'  || item.destination === 'both';
+
+    // ── Adiciona na Linha do Tempo ──────────────────────────────
+    if (isTimeline && timelineTrack) {
+      // Alterna lados (esquerdo/direito) com base no índice
+      const isRight = i % 2 === 0;
+      const article = document.createElement('article');
+      article.className = `timeline__item${isRight ? ' timeline__item--right reveal-right' : ' reveal-left'}`;
+      article.setAttribute('role', 'listitem');
+
+      article.innerHTML = `
+        <div class="timeline__photo-wrap">
+          ${item.imageBase64
+            ? `<img src="${item.imageBase64}" alt="${escapeHtml(item.title)}" class="timeline__photo" loading="lazy" />`
+            : `<div class="timeline__photo-placeholder">📷</div>`}
+        </div>
+        <div class="timeline__content">
+          <time class="timeline__date">${escapeHtml(item.date || '')}</time>
+          <h3 class="timeline__title">${escapeHtml(item.title)}</h3>
+          <p class="timeline__caption">${escapeHtml(item.description)}</p>
+        </div>
+      `;
+
+      timelineTrack.appendChild(article);
+
+      // Aciona o reveal imediatamente (já está no DOM)
+      setTimeout(() => article.classList.add('is-visible'), 100 * i);
+    }
+
+    // ── Adiciona na Galeria ─────────────────────────────────────
+    if (isGallery && galleryGrid && item.imageBase64) {
+      const figure = document.createElement('figure');
+      figure.className = 'gallery__item reveal-fade';
+      figure.setAttribute('role', 'listitem');
+
+      figure.innerHTML = `
+        <button
+          class="gallery__btn"
+          aria-label="Abrir ${escapeHtml(item.title)} em tamanho completo"
+          data-index="${galleryIndex}"
+        >
+          <img
+            src="${item.imageBase64}"
+            data-src="${item.imageBase64}"
+            data-caption="${escapeHtml(item.description || item.title)}"
+            alt="${escapeHtml(item.title)}"
+            class="gallery__img"
+            loading="lazy"
+          />
+        </button>
+      `;
+
+      galleryGrid.appendChild(figure);
+      galleryIndex++;
+    }
+  });
+
+  // Reinicia o lightbox para incluir os novos itens adicionados dinamicamente
+  // (chama novamente para registrar os novos botões da galeria)
+  initGallery();
+}
+
+/* ── Pequeno utilitário de segurança para evitar XSS ao inserir texto do usuário no HTML ── */
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g,  '&amp;')
+    .replace(/</g,  '&lt;')
+    .replace(/>/g,  '&gt;')
+    .replace(/"/g,  '&quot;')
+    .replace(/'/g,  '&#039;');
 }
