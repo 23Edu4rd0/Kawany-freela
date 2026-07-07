@@ -451,17 +451,22 @@ async function initMusicPlayer() {
   if (playlist.length === 0) playlist = ["Um_Amor_Puro.mp3"];
 
   // Sincronizador infalível de Ícones
+  // Definição dos ícones em SVG à prova de emojis
+  const svgPlay = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+  const svgPause = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+
+  // Sincronizador de Ícones
   function syncIcons() {
     if (!audio.paused) {
-      if (btnPlayPause) btnPlayPause.textContent = "⏸";
+      if (btnPlayPause) btnPlayPause.innerHTML = svgPause; // Injeta o SVG de Pause
       mainBtn.setAttribute("aria-pressed", "true");
     } else {
-      if (btnPlayPause) btnPlayPause.textContent = "▶";
+      if (btnPlayPause) btnPlayPause.innerHTML = svgPlay; // Injeta o SVG de Play
       mainBtn.setAttribute("aria-pressed", "false");
     }
   }
 
-  // Escuta todos os eventos possíveis do áudio para manter a interface perfeita
+  // Escuta os eventos do áudio
   audio.addEventListener("play", syncIcons);
   audio.addEventListener("playing", syncIcons);
   audio.addEventListener("pause", syncIcons);
