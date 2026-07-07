@@ -1,11 +1,14 @@
+/* --- 1. CONFIGURAÇÕES E CONSTANTES --- */
 const ADMIN_PASSWORD = "kawany2025";
 const STORAGE_KEY = "kawany_admin_items";
 const MAX_SIZE = 5 * 1024 * 1024;
 
+/* --- 2. ELEMENTOS DO DOM --- */
 const lockScreen = document.getElementById("lock-screen");
 const lockForm = document.getElementById("lock-form");
 const lockPassword = document.getElementById("lock-password");
 const lockError = document.getElementById("lock-error");
+const lockSubmit = document.getElementById("lock-submit");
 const adminPanel = document.getElementById("admin-panel");
 const addForm = document.getElementById("add-form");
 const imageInput = document.getElementById("image-input");
@@ -18,80 +21,112 @@ const itemDesc = document.getElementById("item-description");
 const formAlert = document.getElementById("form-alert");
 const itemsList = document.getElementById("items-list");
 const clearAllBtn = document.getElementById("clear-all-btn");
+const musicList = document.getElementById("music-list");
+const clearMusicBtn = document.getElementById("clear-music-btn");
 
 let currentImageBase64 = "";
 
-if (sessionStorage.getItem("admin_auth") === "true") unlock();
-
-lockForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  if (lockPassword.value === ADMIN_PASSWORD) {
-    sessionStorage.setItem("admin_auth", "true");
-    lockError.classList.remove("show");
-    unlock();
-  } else {
-    lockError.classList.add("show");
-    lockPassword.value = "";
-    lockPassword.focus();
-  }
-});
-
-function unlock() {
-  lockScreen.style.display = "none";
-  adminPanel.classList.add("visible");
-  renderList();
+/* --- 3. FUNÇÕES UTILITÁRIAS --- */
+function esc(s) {
+  return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
-imageInput.addEventListener("change", () => {
-  const file = imageInput.files[0];
-  if (file) handleFile(file);
-});
+function showAlert(msg, type) {
+  formAlert.textContent = msg;
+  formAlert.className = "alert show alert-" + type;
+  setTimeout(() => formAlert.classList.remove("show"), 4000);
+}
 
-uploadZone.addEventListener("dragover", (e) => {
-  e.preventDefault();
-  uploadZone.classList.add("drag-over");
-});
-uploadZone.addEventListener("dragleave", () =>
-  uploadZone.classList.remove("drag-over"),
-);
-uploadZone.addEventListener("drop", (e) => {
-  e.preventDefault();
-  uploadZone.classList.remove("drag-over");
-  const file = e.dataTransfer.files[0];
-  if (file && file.type.startsWith("image/")) handleFile(file);
-});
+function getLocalItems() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
+}
 
-function handleFile(file) {
-  if (file.size > MAX_SIZE) {
-    showAlert("Imagem muito grande. Máximo 5 MB.", "error");
+function saveLocalItems(items) { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
+
+/* --- 4. RENDERIZAÇÃO DE MOMENTOS --- */
+async function renderList() {
+  let items = [];
+  try {
+    const res = await fetch("/api/moments");
+    items = res.ok ? await res.json() : getLocalItems();
+  } catch (e) { items = getLocalItems(); }
+
+  itemsList.innerHTML = "";
+  if (!items.length) {
+    itemsList.innerHTML = '<div class="empty-state">Nenhum momento adicionado ainda.</div>';
     return;
   }
 
+  [...items].reverse().forEach((item) => {
+    const div = document.createElement("div");
+    div.className = "item-card";
+    div.innerHTML = `
+      <div class="item-card__thumb">${item.imageBase64 ? `<img src="${item.imageBase64}" />` : "📷"}</div>
+      <div class="item-card__info">
+        <div class="item-card__title">${esc(item.title)}</div>
+      </div>
+      <button class="btn btn-danger" data-id="${item.id}">Excluir</button>
+    `;
+    div.querySelector(".btn-danger").addEventListener("click", async () => {
+      if (confirm("Excluir este momento?")) {
+        div.style.opacity = "0";
+        setTimeout(() => div.remove(), 300);
+        await fetch(`/api/moments?id=${item.id}`, { method: "DELETE", headers: { "X-Admin-Password": ADMIN_PASSWORD } });
+        renderList();
+      }
+    });
+    itemsList.appendChild(div);
+  });
+}
+
+/* --- 5. RENDERIZAÇÃO DE MÚSICAS (API AUTOMÁTICA) --- */
+async function renderMusicList() {
+  musicList.innerHTML = "Carregando músicas...";
+  try {
+    const response = await fetch('/api/moments?action=list-music');
+    const files = await response.json();
+    
+    musicList.innerHTML = "";
+    const activeFile = localStorage.getItem("kawany_active_music_file");
+
+    if (!Array.isArray(files) || files.length === 0) {
+      musicList.innerHTML = '<p>Nenhuma música encontrada em assets/music/</p>';
+      return;
+    }
+
+    files.forEach((file) => {
+      const isActive = file === activeFile;
+      const div = document.createElement("div");
+      div.className = `music-card ${isActive ? "active" : ""}`;
+      div.innerHTML = `
+        <div class="music-card__info"><div class="music-card__title">${esc(file)}</div></div>
+        <button class="btn ${isActive ? 'btn-active' : 'btn-outline'}">
+          ${isActive ? "⏸ Ativa" : "▶ Ativar"}
+        </button>
+      `;
+      div.querySelector("button").addEventListener("click", () => {
+        localStorage.setItem("kawany_active_music_file", file);
+        renderMusicList();
+      });
+      musicList.appendChild(div);
+    });
+  } catch (e) {
+    musicList.innerHTML = '<p>Erro ao carregar músicas da pasta.</p>';
+  }
+}
+
+/* --- 6. LÓGICA DE IMAGEM --- */
+function handleFile(file) {
+  if (file.size > MAX_SIZE) return showAlert("Imagem muito grande.", "error");
   const reader = new FileReader();
   reader.onload = (e) => {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      let width = img.width;
-      let height = img.height;
-
-      const MAX_DIM = 1200;
-      if (width > height) {
-        if (width > MAX_DIM) {
-          height = Math.round((height * MAX_DIM) / width);
-          width = MAX_DIM;
-        }
-      } else {
-        if (height > MAX_DIM) {
-          width = Math.round((width * MAX_DIM) / height);
-          height = MAX_DIM;
-        }
-      }
-
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, width, height);
+      let w = img.width, h = img.height;
+      if (w > 1200) { h *= 1200/w; w = 1200; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
       currentImageBase64 = canvas.toDataURL("image/jpeg", 0.7);
       previewImg.src = currentImageBase64;
       imagePreview.style.display = "block";
@@ -101,184 +136,57 @@ function handleFile(file) {
   reader.readAsDataURL(file);
 }
 
+/* --- 7. INICIALIZAÇÃO E EVENTOS --- */
+function unlock() {
+  lockScreen.style.display = "none";
+  adminPanel.classList.add("visible");
+  renderList();
+  renderMusicList();
+}
+
+if (sessionStorage.getItem("admin_auth") === "true") unlock();
+
+lockForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (lockPassword.value.trim() === ADMIN_PASSWORD) {
+    sessionStorage.setItem("admin_auth", "true");
+    lockSubmit.textContent = "✓ Acessando...";
+    setTimeout(() => unlock(), 500);
+  } else {
+    lockError.classList.add("show");
+  }
+});
+
+imageInput.addEventListener("change", (e) => e.target.files[0] && handleFile(e.target.files[0]));
+
 addForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const title = itemTitle.value.trim();
-  if (!title) {
-    showAlert("Adicione um título.", "error");
-    itemTitle.focus();
-    return;
-  }
-
-  const destination = document.querySelector(
-    'input[name="destination"]:checked',
-  ).value;
-  const newItem = {
-    id: Date.now().toString(),
-    title,
-    date: itemDate.value.trim(),
-    description: itemDesc.value.trim(),
-    imageBase64: currentImageBase64,
-    destination,
-    createdAt: new Date().toISOString(),
+  const newItem = { 
+      id: Date.now().toString(), 
+      title: itemTitle.value, 
+      date: itemDate.value,
+      description: itemDesc.value,
+      imageBase64: currentImageBase64,
+      destination: document.querySelector('input[name="destination"]:checked').value
   };
-
-  try {
-    const password = sessionStorage.getItem("admin_pwd") || ADMIN_PASSWORD;
-    const res = await fetch("/api/moments", {
+  await fetch("/api/moments", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Admin-Password": password,
-      },
+      headers: { "Content-Type": "application/json", "X-Admin-Password": ADMIN_PASSWORD },
       body: JSON.stringify(newItem),
-    });
-
-    if (res.ok) {
-      showAlert("Momento salvo com sucesso no banco de dados! ✨", "success");
-    } else {
-      const errData = await res.json();
-      throw new Error(errData.error || "Erro ao salvar na API");
-    }
-  } catch (e) {
-    const items = getLocalItems();
-    items.push(newItem);
-    saveLocalItems(items);
-    showAlert("Salvo localmente (banco de dados offline). ✨", "success");
-  }
-
-  addForm.reset();
-  currentImageBase64 = "";
-  imagePreview.style.display = "none";
-  previewImg.src = "";
-  renderList();
-});
-
-async function renderList() {
-  let items = [];
-  try {
-    const res = await fetch("/api/moments");
-    if (res.ok) {
-      items = await res.json();
-    } else {
-      items = getLocalItems();
-    }
-  } catch (e) {
-    items = getLocalItems();
-  }
-
-  itemsList.innerHTML = "";
-  if (!items || !items.length) {
-    itemsList.innerHTML =
-      '<div class="empty-state"><div class="empty-state__icon">📭</div><p>Nenhum momento adicionado ainda.</p></div>';
-    return;
-  }
-
-  [...items].reverse().forEach((item) => {
-    const badgeClass =
-      {
-        timeline: "badge-timeline",
-        gallery: "badge-gallery",
-        both: "badge-both",
-      }[item.destination] || "badge-gallery";
-    const badgeLabel =
-      {
-        timeline: "📅 Timeline",
-        gallery: "🖼️ Galeria",
-        both: "✨ Ambos",
-      }[item.destination] || "Galeria";
-    const div = document.createElement("div");
-    div.className = "item-card";
-    div.setAttribute("role", "listitem");
-    div.innerHTML = `
-      <div class="item-card__thumb">${item.imageBase64 ? `<img src="${item.imageBase64}" alt="" loading="lazy" />` : "📷"}</div>
-      <div class="item-card__info">
-        <div class="item-card__title">${esc(item.title)}</div>
-        <div class="item-card__meta"><span class="item-card__badge ${badgeClass}">${badgeLabel}</span>${item.date ? "· " + esc(item.date) : ""}</div>
-      </div>
-      <button class="btn btn-danger" data-id="${item.id}" aria-label="Excluir ${esc(item.title)}">Excluir</button>
-    `;
-    div.querySelector(".btn-danger").addEventListener("click", async () => {
-      if (confirm("Excluir este momento?")) {
-        try {
-          const password =
-            sessionStorage.getItem("admin_pwd") || ADMIN_PASSWORD;
-          const res = await fetch(`/api/moments?id=${item.id}`, {
-            method: "DELETE",
-            headers: {
-              "X-Admin-Password": password,
-            },
-          });
-          if (!res.ok) {
-            const errData = await res.json();
-            throw new Error(errData.error || "Erro ao deletar da API");
-          }
-          showAlert("Item excluído com sucesso! 🗑️", "success");
-        } catch (e) {
-          const itemsFiltered = getLocalItems().filter(
-            (i) => i.id !== item.id,
-          );
-          saveLocalItems(itemsFiltered);
-          showAlert("Item excluído localmente.", "success");
-        }
-        renderList();
-      }
-    });
-    itemsList.appendChild(div);
   });
-}
-
-clearAllBtn.addEventListener("click", async () => {
-  if (confirm("Apagar TODOS os momentos do banco de dados?")) {
-    try {
-      const password = sessionStorage.getItem("admin_pwd") || ADMIN_PASSWORD;
-      const res = await fetch("/api/moments?clearAll=true", {
-        method: "DELETE",
-        headers: {
-          "X-Admin-Password": password,
-        },
-      });
-      if (res.ok) {
-        showAlert("Todos os momentos foram removidos do banco! 🗑️", "success");
-      } else {
-        throw new Error("Erro ao limpar banco");
-      }
-    } catch (e) {
-      localStorage.removeItem(STORAGE_KEY);
-      showAlert("Todos os momentos locais foram removidos.", "success");
-    }
-    renderList();
-  }
+  renderList();
+  addForm.reset();
+  imagePreview.style.display = "none";
 });
 
-function getLocalItems() {
-  try {
-    const r = localStorage.getItem(STORAGE_KEY);
-    return r ? JSON.parse(r) : [];
-  } catch (e) {
-    return [];
-  }
-}
+clearAllBtn.addEventListener("click", async () => { 
+    if(confirm("Apagar todos os momentos?")) { 
+        await fetch("/api/moments?clearAll=true", { method: "DELETE", headers: { "X-Admin-Password": ADMIN_PASSWORD } });
+        renderList(); 
+    } 
+});
 
-function saveLocalItems(items) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  } catch (e) {
-    showAlert("Armazenamento cheio. Tente imagens menores.", "error");
-  }
-}
-
-function showAlert(msg, type) {
-  formAlert.textContent = msg;
-  formAlert.className = "alert show alert-" + type;
-  setTimeout(() => formAlert.classList.remove("show"), 4000);
-}
-
-function esc(s) {
-  return String(s || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
+clearMusicBtn.addEventListener("click", () => {
+    localStorage.removeItem("kawany_active_music_file");
+    renderMusicList();
+});

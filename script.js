@@ -400,18 +400,20 @@ function initTypewriter() {
 function initMusicPlayer() {
   const btn = document.getElementById("music-btn");
   const audio = document.getElementById("bg-audio");
+  const source = audio.querySelector("source");
 
-  if (!btn || !audio) return;
+  if (!btn || !audio || !source) return;
 
-  if (CONFIG.musicSrc) {
-    audio.querySelector("source")?.setAttribute("src", CONFIG.musicSrc);
+  // 1. Busca o nome do arquivo que você salvou no Admin
+  const activeFile = localStorage.getItem("kawany_active_music_file");
+
+  // 2. Se houver uma música selecionada, atualiza o player
+  if (activeFile) {
+    source.setAttribute("src", `assets/music/${activeFile}`);
+    audio.load(); // Importante: recarrega o áudio com o novo caminho
   }
 
-  audio.addEventListener("error", () => {
-    const player = document.getElementById("music-player");
-    if (player) player.style.display = "none";
-  });
-
+  // Lógica de play/pause original
   btn.addEventListener("click", async () => {
     if (audio.paused) {
       try {
@@ -419,7 +421,7 @@ function initMusicPlayer() {
         btn.setAttribute("aria-pressed", "true");
         btn.setAttribute("aria-label", "Pausar música de fundo");
       } catch (err) {
-        console.warn("Playback blocked:", err);
+        console.warn("Playback bloqueado pelo navegador:", err);
       }
     } else {
       audio.pause();
@@ -432,6 +434,42 @@ function initMusicPlayer() {
     btn.setAttribute("aria-pressed", "false");
     btn.setAttribute("aria-label", "Tocar música de fundo");
   });
+}
+
+function getAdminMusic() {
+  try {
+    const stored = localStorage.getItem("kawany_admin_music");
+    const customMusic = stored ? JSON.parse(stored) : [];
+    
+    // Verificar se música padrão está ativada
+    const defaultMusicEnabled = localStorage.getItem("kawany_default_music_enabled");
+    const isDefaultEnabled = defaultMusicEnabled !== null ? defaultMusicEnabled === "true" : true;
+    
+    // Incluir música padrão se ativada
+    const allMusic = [];
+    if (isDefaultEnabled) {
+      allMusic.push({
+        id: "default-um-amor-puro",
+        title: "Um Amor Puro",
+        musicBase64: CONFIG.musicSrc,
+        isDefault: true
+      });
+    }
+    
+    // Adicionar músicas customizadas
+    allMusic.push(...customMusic);
+    
+    return allMusic;
+  } catch (e) {
+    console.error("Erro ao carregar músicas:", e);
+    // Retornar música padrão como fallback
+    return [{
+      id: "default-um-amor-puro",
+      title: "Um Amor Puro",
+      musicBase64: CONFIG.musicSrc,
+      isDefault: true
+    }];
+  }
 }
 
 function initNextAnniversary() {
