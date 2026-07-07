@@ -89,6 +89,65 @@
   transform: scale(1.08);
 }
 
+/* ════════════════════════════════════════════════════════════
+   BARRA DE PROGRESSO & TEMPO
+   ════════════════════════════════════════════════════════════ */
+.music-player__progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  margin: 6px 0;
+}
+
+.music-player__time {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  color: var(--clr-brown-lt);
+  min-width: 30px;
+  text-align: center;
+  user-select: none;
+}
+
+.music-player__progress-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(92, 61, 46, 0.15); /* Fundo da barra translúcido */
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.music-player__progress-filled {
+  height: 100%;
+  background: var(--clr-terra); /* Cor principal da barra */
+  border-radius: 2px;
+  width: 0%;
+  position: relative;
+  pointer-events: none;
+}
+
+/* Bolinha que aparece no hover (estilo Spotify) */
+.music-player__progress-filled::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%) scale(0);
+  width: 8px;
+  height: 8px;
+  background: var(--clr-terra);
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.music-player__progress-bar:hover .music-player__progress-filled::after {
+  transform: translateY(-50%) scale(1.2);
+}
+
 @media (max-width: 480px) {
   .music-player__expanded {
     width: 190px;

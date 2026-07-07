@@ -1,4 +1,7 @@
 {
+
+  "cleanUrls": true,
+
   "functions": {
     "api/moments.js": {
       "includeFiles": "assets/music/**"

@@ -45,19 +45,22 @@ function initIntro() {
 
     cover.classList.add("is-opening-envelope");
     const envelope = cover.querySelector(".intro-envelope");
-    if (envelope) {
-      envelope.classList.add("is-opening");
-    }
+    if (envelope) envelope.classList.add("is-opening");
 
     main.removeAttribute("inert");
 
     const audio = document.getElementById("bg-audio");
     if (audio) {
-      audio.play().catch(() => {
-        console.info(
-          "Autoplay bloqueado pelo navegador — use o botão de música.",
-        );
-      });
+      // Dá o play na música e garante que a UI saiba disso imediatamente
+      audio
+        .play()
+        .then(() => {
+          const mainBtn = document.getElementById("music-btn");
+          const playPauseBtn = document.getElementById("music-playpause");
+          if (mainBtn) mainBtn.setAttribute("aria-pressed", "true");
+          if (playPauseBtn) playPauseBtn.textContent = "⏸";
+        })
+        .catch((e) => console.info("Autoplay bloqueado pelo navegador.", e));
     }
 
     const musicPlayer = document.getElementById("music-player");
@@ -393,127 +396,162 @@ function initTypewriter() {
 // para todos os visitantes).
 // ─────────────────────────────────────────
 async function initMusicPlayer() {
-  const panel = document.getElementById("music-player");
-  const toggleBtn = document.getElementById("music-btn");
-  const trackName = document.getElementById("music-track-name");
-  const playPauseBtn = document.getElementById("music-playpause");
-  const prevBtn = document.getElementById("music-prev");
-  const nextBtn = document.getElementById("music-next");
-  const restartBtn = document.getElementById("music-restart");
+  const playerWrapper = document.getElementById("music-player");
+  const mainBtn = document.getElementById("music-btn");
   const audio = document.getElementById("bg-audio");
-  const source = audio?.querySelector("source");
+  const source = audio.querySelector("source");
+  const trackName = document.getElementById("music-track-name");
 
-  if (!panel || !toggleBtn || !audio || !source) return;
+  const btnPrev = document.getElementById("music-prev");
+  const btnPlayPause = document.getElementById("music-playpause");
+  const btnNext = document.getElementById("music-next");
+  const btnRestart = document.getElementById("music-restart");
 
-  let playlist = ["Um_Amor_Puro.mp3"];
-  let currentTrackIndex = 0;
+  const progressBar = document.getElementById("music-progress-bar");
+  const progressFilled = document.getElementById("music-progress-filled");
+  const timeCurrent = document.getElementById("music-time-current");
+  const timeTotal = document.getElementById("music-time-total");
+
+  if (!playerWrapper || !mainBtn || !audio || !source) return;
+
+  let playlist = [];
+  let currentIndex = 0;
+
+  function formatTime(seconds) {
+    if (isNaN(seconds)) return "0:00";
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  }
+
+  mainBtn.addEventListener("click", () => {
+    playerWrapper.classList.toggle("is-open");
+    mainBtn.setAttribute(
+      "aria-expanded",
+      playerWrapper.classList.contains("is-open"),
+    );
+  });
 
   try {
-    const [filesRes, activeRes] = await Promise.all([
-      fetch("/api/moments?action=list-music"),
-      fetch("/api/moments?action=get-active-music"),
-    ]);
+    const resList = await fetch("/api/moments?action=list-music");
+    if (resList.ok) playlist = await resList.json();
 
-    if (filesRes.ok) {
-      const files = await filesRes.json();
-      if (files && files.length) playlist = files;
-    }
-    if (activeRes.ok) {
-      const data = await activeRes.json();
-      if (data.activeFile) {
-        const idx = playlist.indexOf(data.activeFile);
-        currentTrackIndex = idx !== -1 ? idx : 0;
+    const resActive = await fetch("/api/moments?action=get-active-music");
+    if (resActive.ok) {
+      const dataActive = await resActive.json();
+      if (playlist.length > 0 && dataActive.activeFile) {
+        const activeIndex = playlist.indexOf(dataActive.activeFile);
+        currentIndex = activeIndex !== -1 ? activeIndex : 0;
       }
     }
   } catch (e) {
-    console.warn(
-      "Não foi possível buscar a playlist, usando a música padrão:",
-      e,
-    );
+    console.error("Erro ao carregar playlist:", e);
   }
 
-  function trackLabel(fileName) {
-    return fileName.replace(/\.[^/.]+$/, "").replace(/[_-]+/g, " ");
-  }
+  if (playlist.length === 0) playlist = ["Um_Amor_Puro.mp3"];
 
-  function loadTrack(index, autoplay) {
-    currentTrackIndex =
-      ((index % playlist.length) + playlist.length) % playlist.length;
-    const fileName = playlist[currentTrackIndex];
-    const wasPlaying = !audio.paused;
-
-    source.setAttribute("src", `assets/music/${fileName}`);
-    audio.load();
-    if (trackName) trackName.textContent = trackLabel(fileName);
-
-    if (autoplay || wasPlaying) {
-      audio.play().catch(() => {});
-    }
-  }
-
-  loadTrack(currentTrackIndex, false);
-
-  function updatePlayPauseUI() {
-    const isPlaying = !audio.paused;
-    toggleBtn.classList.toggle("is-playing", isPlaying);
-    toggleBtn.setAttribute("aria-pressed", String(isPlaying));
-    if (playPauseBtn) {
-      playPauseBtn.textContent = isPlaying ? "⏸" : "▶";
-      playPauseBtn.setAttribute(
-        "aria-label",
-        isPlaying ? "Pausar música" : "Tocar música",
-      );
-    }
-  }
-
-  // O botão flutuante agora abre/fecha o painel do mini player
-  toggleBtn.addEventListener("click", () => {
-    const isOpen = panel.classList.toggle("is-open");
-    toggleBtn.setAttribute("aria-expanded", String(isOpen));
-  });
-
-  playPauseBtn?.addEventListener("click", async (e) => {
-    e.stopPropagation();
-    if (audio.paused) {
-      try {
-        await audio.play();
-      } catch (err) {
-        console.warn("Playback bloqueado pelo navegador:", err);
-      }
+  // Sincronizador infalível de Ícones
+  function syncIcons() {
+    if (!audio.paused) {
+      if (btnPlayPause) btnPlayPause.textContent = "⏸";
+      mainBtn.setAttribute("aria-pressed", "true");
     } else {
-      audio.pause();
+      if (btnPlayPause) btnPlayPause.textContent = "▶";
+      mainBtn.setAttribute("aria-pressed", "false");
+    }
+  }
+
+  // Escuta todos os eventos possíveis do áudio para manter a interface perfeita
+  audio.addEventListener("play", syncIcons);
+  audio.addEventListener("playing", syncIcons);
+  audio.addEventListener("pause", syncIcons);
+  audio.addEventListener("ended", syncIcons);
+
+  function loadSong(index) {
+    if (!playlist[index]) return;
+    const fileName = playlist[index];
+    const newSrc = `assets/music/${fileName}`;
+    const currentSrc = source.getAttribute("src");
+
+    let displayName = fileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
+    if (trackName) trackName.textContent = displayName;
+
+    if (currentSrc === newSrc) return;
+
+    const wasPlaying = !audio.paused;
+    source.setAttribute("src", newSrc);
+    audio.load();
+
+    if (wasPlaying) {
+      audio.play().catch((e) => console.warn("Autoplay bloqueado:", e));
+    }
+  }
+
+  loadSong(currentIndex);
+
+  function togglePlay() {
+    if (audio.paused)
+      audio.play().catch((e) => console.warn("Autoplay bloqueado:", e));
+    else audio.pause();
+  }
+
+  if (btnPlayPause) btnPlayPause.addEventListener("click", togglePlay);
+
+  if (btnNext) {
+    btnNext.addEventListener("click", () => {
+      currentIndex = (currentIndex + 1) % playlist.length;
+      loadSong(currentIndex);
+      audio.play();
+    });
+  }
+
+  if (btnPrev) {
+    btnPrev.addEventListener("click", () => {
+      currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+      loadSong(currentIndex);
+      audio.play();
+    });
+  }
+
+  if (btnRestart) {
+    btnRestart.addEventListener("click", () => {
+      audio.currentTime = 0;
+      if (audio.paused) audio.play();
+    });
+  }
+
+  audio.removeAttribute("loop");
+  audio.addEventListener("ended", () => {
+    currentIndex = (currentIndex + 1) % playlist.length;
+    loadSong(currentIndex);
+    audio.play();
+  });
+
+  audio.addEventListener("loadedmetadata", () => {
+    if (timeTotal) timeTotal.textContent = formatTime(audio.duration);
+    syncIcons(); // Sincroniza ao carregar a faixa
+  });
+
+  audio.addEventListener("timeupdate", () => {
+    if (!audio.duration) return;
+    const progressPercent = (audio.currentTime / audio.duration) * 100;
+
+    if (progressFilled) progressFilled.style.width = `${progressPercent}%`;
+    if (timeCurrent) timeCurrent.textContent = formatTime(audio.currentTime);
+
+    if (timeTotal && timeTotal.textContent === "0:00") {
+      timeTotal.textContent = formatTime(audio.duration);
     }
   });
 
-  prevBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    loadTrack(currentTrackIndex - 1, true);
-  });
-
-  nextBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    loadTrack(currentTrackIndex + 1, true);
-  });
-
-  restartBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    audio.currentTime = 0;
-    audio.play().catch(() => {});
-  });
-
-  // Fecha o painel ao clicar fora dele
-  document.addEventListener("click", (e) => {
-    if (panel.classList.contains("is-open") && !panel.contains(e.target)) {
-      panel.classList.remove("is-open");
-      toggleBtn.setAttribute("aria-expanded", "false");
-    }
-  });
-
-  audio.addEventListener("play", updatePlayPauseUI);
-  audio.addEventListener("pause", updatePlayPauseUI);
-  audio.addEventListener("ended", () => loadTrack(currentTrackIndex + 1, true));
-
-  updatePlayPauseUI();
+  if (progressBar) {
+    progressBar.addEventListener("click", (e) => {
+      const rect = progressBar.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const width = rect.width;
+      audio.currentTime = (clickX / width) * audio.duration;
+    });
+  }
 }
 
 function initNextAnniversary() {
