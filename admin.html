@@ -132,16 +132,6 @@
       </section>
 
       <section class="card">
-        <h2>
-          <span>🎶 Músicas Salvas</span>
-          <button class="btn-clear" id="clear-music-btn" type="button">
-            🗑 Limpar tudo
-          </button>
-        </h2>
-        <div id="music-list" role="list"></div>
-      </section>
-
-      <section class="card">
         <h2 style="justify-content: space-between">
           <span>📋 Momentos Salvos</span>
           <button class="btn-clear" id="clear-all-btn" type="button">
@@ -149,6 +139,18 @@
           </button>
         </h2>
         <div id="items-list" role="list"></div>
+      </section>
+
+      <section class="card">
+        <h2>🎵 Música de Fundo</h2>
+        <p style="font-size: 0.85rem; color: var(--clr-brown-md); margin-bottom: 1rem;">
+          Escolha qual música vai tocar para todos os visitantes do site (lê os arquivos direto de <code>assets/music</code>).
+        </p>
+        <div class="radio-group" id="music-list" role="radiogroup"></div>
+        <div id="music-alert" class="alert" role="alert" aria-live="polite"></div>
+        <button type="button" class="btn btn-primary" id="music-save-btn" style="margin-top: 1rem;">
+          💾 Definir Música para Todos
+        </button>
       </section>
 
       <footer class="admin-footer">

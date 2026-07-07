@@ -5,112 +5,401 @@ const MAX_SIZE = 5 * 1024 * 1024;
 const lockScreen = document.getElementById("lock-screen");
 const lockForm = document.getElementById("lock-form");
 const lockPassword = document.getElementById("lock-password");
-const lockSubmit = document.getElementById("lock-submit");
+const lockError = document.getElementById("lock-error");
 const adminPanel = document.getElementById("admin-panel");
 const addForm = document.getElementById("add-form");
 const imageInput = document.getElementById("image-input");
+const uploadZone = document.getElementById("upload-zone");
 const previewImg = document.getElementById("preview-img");
 const imagePreview = document.getElementById("image-preview");
 const itemTitle = document.getElementById("item-title");
 const itemDate = document.getElementById("item-date");
 const itemDesc = document.getElementById("item-description");
+const formAlert = document.getElementById("form-alert");
 const itemsList = document.getElementById("items-list");
 const clearAllBtn = document.getElementById("clear-all-btn");
 const musicList = document.getElementById("music-list");
+const musicSaveBtn = document.getElementById("music-save-btn");
+const musicAlert = document.getElementById("music-alert");
 
 let currentImageBase64 = "";
 
-function esc(s) { return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+// Auto-unlock if already authenticated this session
+if (sessionStorage.getItem("admin_auth") === "true") unlock();
+
+lockForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (lockPassword.value === ADMIN_PASSWORD) {
+    sessionStorage.setItem("admin_auth", "true");
+    lockError.classList.remove("show");
+    unlock();
+  } else {
+    lockError.classList.add("show");
+    lockPassword.value = "";
+    lockPassword.focus();
+  }
+});
+
+function unlock() {
+  lockScreen.style.display = "none";
+  adminPanel.classList.add("visible");
+
+  // Feedback visual IMEDIATO — evita a tela parecer travada
+  itemsList.innerHTML =
+    '<div class="empty-state"><div class="empty-state__icon">⏳</div><p>Carregando momentos…</p></div>';
+  if (musicList) {
+    musicList.innerHTML =
+      '<p style="font-size:0.85rem;color:#999;">Carregando músicas…</p>';
+  }
+
+  loadAdminData();
+}
+
+// Busca moments + músicas em UMA ÚNICA requisição (era 3 antes)
+async function loadAdminData() {
+  try {
+    const res = await fetch("/api/moments?action=admin-bootstrap");
+    if (!res.ok) throw new Error("Falha no bootstrap");
+    const data = await res.json();
+
+    renderItems(data.moments || []);
+    renderMusicList(data.musicFiles || [], data.activeMusic || null);
+  } catch (e) {
+    console.warn("Bootstrap falhou, tentando endpoints separados:", e);
+    // Fallback: se o bootstrap falhar, tenta do jeito antigo
+    renderList();
+    loadMusicSection();
+  }
+}
+
+// Image upload
+imageInput.addEventListener("change", () => {
+  const file = imageInput.files[0];
+  if (file) handleFile(file);
+});
+
+uploadZone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  uploadZone.classList.add("drag-over");
+});
+uploadZone.addEventListener("dragleave", () =>
+  uploadZone.classList.remove("drag-over"),
+);
+uploadZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  uploadZone.classList.remove("drag-over");
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith("image/")) handleFile(file);
+});
+
+function handleFile(file) {
+  if (file.size > MAX_SIZE) {
+    showAlert("Imagem muito grande. Máximo 5 MB.", "error");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      let width = img.width;
+      let height = img.height;
+
+      const MAX_DIM = 1200;
+      if (width > height) {
+        if (width > MAX_DIM) {
+          height = Math.round((height * MAX_DIM) / width);
+          width = MAX_DIM;
+        }
+      } else {
+        if (height > MAX_DIM) {
+          width = Math.round((width * MAX_DIM) / height);
+          height = MAX_DIM;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+      currentImageBase64 = canvas.toDataURL("image/jpeg", 0.7);
+      previewImg.src = currentImageBase64;
+      imagePreview.style.display = "block";
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+addForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const title = itemTitle.value.trim();
+  if (!title) {
+    showAlert("Adicione um título.", "error");
+    itemTitle.focus();
+    return;
+  }
+
+  const destination = document.querySelector(
+    'input[name="destination"]:checked',
+  ).value;
+  const newItem = {
+    id: Date.now().toString(),
+    title,
+    date: itemDate.value.trim(),
+    description: itemDesc.value.trim(),
+    imageBase64: currentImageBase64,
+    destination,
+    createdAt: new Date().toISOString(),
+  };
+
+  try {
+    const password = sessionStorage.getItem("admin_pwd") || ADMIN_PASSWORD;
+    const res = await fetch("/api/moments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Admin-Password": password,
+      },
+      body: JSON.stringify(newItem),
+    });
+
+    if (res.ok) {
+      showAlert("Momento salvo com sucesso no banco de dados! ✨", "success");
+    } else {
+      const errData = await res.json();
+      throw new Error(errData.error || "Erro ao salvar na API");
+    }
+  } catch (e) {
+    console.warn("Erro ao salvar na API, salvando localmente:", e);
+    const items = getLocalItems();
+    items.push(newItem);
+    saveLocalItems(items);
+    showAlert("Salvo localmente (banco de dados offline). ✨", "success");
+  }
+
+  addForm.reset();
+  currentImageBase64 = "";
+  imagePreview.style.display = "none";
+  previewImg.src = "";
+  renderList();
+});
 
 async function renderList() {
   let items = [];
   try {
     const res = await fetch("/api/moments");
-    items = res.ok ? await res.json() : [];
-  } catch (e) { items = []; }
+    if (res.ok) {
+      items = await res.json();
+    } else {
+      items = getLocalItems();
+    }
+  } catch (e) {
+    items = getLocalItems();
+  }
+  renderItems(items);
+}
 
+function renderItems(items) {
   itemsList.innerHTML = "";
+  if (!items || !items.length) {
+    itemsList.innerHTML =
+      '<div class="empty-state"><div class="empty-state__icon">📭</div><p>Nenhum momento adicionado ainda.</p></div>';
+    return;
+  }
+
   [...items].reverse().forEach((item) => {
+    const badgeClass =
+      {
+        timeline: "badge-timeline",
+        gallery: "badge-gallery",
+        both: "badge-both",
+      }[item.destination] || "badge-gallery";
+    const badgeLabel =
+      {
+        timeline: "📅 Timeline",
+        gallery: "🖼️ Galeria",
+        both: "✨ Ambos",
+      }[item.destination] || "Galeria";
     const div = document.createElement("div");
     div.className = "item-card";
+    div.setAttribute("role", "listitem");
     div.innerHTML = `
-      <div class="item-card__thumb">${item.imageBase64 ? `<img src="${item.imageBase64}" />` : "📷"}</div>
-      <div class="item-card__info"><div>${esc(item.title)}</div></div>
-      <button class="btn btn-danger">Excluir</button>
+      <div class="item-card__thumb">${item.imageBase64 ? `<img src="${item.imageBase64}" alt="" loading="lazy" />` : "📷"}</div>
+      <div class="item-card__info">
+        <div class="item-card__title">${esc(item.title)}</div>
+        <div class="item-card__meta"><span class="item-card__badge ${badgeClass}">${badgeLabel}</span>${item.date ? "· " + esc(item.date) : ""}</div>
+      </div>
+      <button class="btn btn-danger" data-id="${item.id}" aria-label="Excluir ${esc(item.title)}">Excluir</button>
     `;
-    div.querySelector(".btn-danger").onclick = async () => {
-      if (confirm("Excluir?")) {
-        await fetch(`/api/moments?id=${item.id}`, { method: "DELETE", headers: { "X-Admin-Password": ADMIN_PASSWORD } });
+    div.querySelector(".btn-danger").addEventListener("click", async () => {
+      if (confirm("Excluir este momento?")) {
+        try {
+          const password =
+            sessionStorage.getItem("admin_pwd") || ADMIN_PASSWORD;
+          const res = await fetch(`/api/moments?id=${item.id}`, {
+            method: "DELETE",
+            headers: {
+              "X-Admin-Password": password,
+            },
+          });
+          if (!res.ok) {
+            const errData = await res.json();
+            throw new Error(errData.error || "Erro ao deletar da API");
+          }
+          showAlert("Item excluído com sucesso! 🗑️", "success");
+        } catch (e) {
+          console.warn("Erro ao deletar da API, deletando localmente:", e);
+          const itemsFiltered = getLocalItems().filter(
+            (i) => i.id !== item.id,
+          );
+          saveLocalItems(itemsFiltered);
+          showAlert("Item excluído localmente.", "success");
+        }
         renderList();
       }
-    };
+    });
     itemsList.appendChild(div);
   });
 }
 
-async function renderMusicList() {
-  musicList.innerHTML = "Carregando músicas...";
+clearAllBtn.addEventListener("click", async () => {
+  if (confirm("Apagar TODOS os momentos do banco de dados?")) {
+    try {
+      const password = sessionStorage.getItem("admin_pwd") || ADMIN_PASSWORD;
+      const res = await fetch("/api/moments?clearAll=true", {
+        method: "DELETE",
+        headers: {
+          "X-Admin-Password": password,
+        },
+      });
+      if (res.ok) {
+        showAlert("Todos os momentos foram removidos do banco! 🗑️", "success");
+      } else {
+        throw new Error("Erro ao limpar banco");
+      }
+    } catch (e) {
+      console.warn("Erro ao limpar API, limpando localmente:", e);
+      localStorage.removeItem(STORAGE_KEY);
+      showAlert("Todos os momentos locais foram removidos.", "success");
+    }
+    renderList();
+  }
+});
+
+function getLocalItems() {
   try {
-    const res = await fetch('/api/moments?action=list-music');
-    const files = await res.json();
-    const activeRes = await fetch('/api/moments?action=get-active-music');
-    const { activeFile } = await activeRes.json();
+    const r = localStorage.getItem(STORAGE_KEY);
+    return r ? JSON.parse(r) : [];
+  } catch (e) {
+    return [];
+  }
+}
 
-    musicList.innerHTML = "";
-    files.forEach(file => {
-      const isActive = file === activeFile;
-      const div = document.createElement("div");
-      div.className = `music-card ${isActive ? "active" : ""}`;
-      div.innerHTML = `<div>${esc(file)}</div><button class="btn">${isActive ? "⏸ Ativa" : "▶ Ativar"}</button>`;
-      div.querySelector("button").onclick = async () => {
-        await fetch('/api/moments?action=set-music', {
-          method: 'POST',
-          headers: { 'X-Admin-Password': ADMIN_PASSWORD, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fileName: file })
-        });
-        renderMusicList();
-      };
-      musicList.appendChild(div);
+function saveLocalItems(items) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  } catch (e) {
+    showAlert("Armazenamento cheio. Tente imagens menores.", "error");
+  }
+}
+
+function showAlert(msg, type) {
+  formAlert.textContent = msg;
+  formAlert.className = "alert show alert-" + type;
+  setTimeout(() => formAlert.classList.remove("show"), 4000);
+}
+
+function esc(s) {
+  return String(s || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// ─────────────────────────────────────────
+// Música de fundo (vale para todos os visitantes)
+// ─────────────────────────────────────────
+
+async function loadMusicSection() {
+  if (!musicList) return;
+  musicList.innerHTML =
+    '<p style="font-size:0.85rem;color:#999;">Carregando músicas…</p>';
+
+  try {
+    const [filesRes, activeRes] = await Promise.all([
+      fetch("/api/moments?action=list-music"),
+      fetch("/api/moments?action=get-active-music"),
+    ]);
+
+    const files = filesRes.ok ? await filesRes.json() : [];
+    const activeData = activeRes.ok
+      ? await activeRes.json()
+      : { activeFile: null };
+
+    renderMusicList(files, activeData.activeFile);
+  } catch (e) {
+    musicList.innerHTML =
+      '<p style="font-size:0.85rem;color:#999;">Erro ao carregar músicas.</p>';
+  }
+}
+
+function renderMusicList(files, activeFile) {
+  if (!musicList) return;
+
+  if (!files || !files.length) {
+    musicList.innerHTML =
+      '<p style="font-size:0.85rem;color:#999;">Nenhum arquivo encontrado em assets/music.</p>';
+    return;
+  }
+
+  musicList.innerHTML = "";
+  files.forEach((fileName) => {
+    const id = `music-${fileName.replace(/[^a-zA-Z0-9]/g, "_")}`;
+    const wrap = document.createElement("div");
+    wrap.className = "radio-pill";
+    wrap.innerHTML = `
+      <input type="radio" id="${id}" name="music-choice" value="${esc(fileName)}" ${fileName === activeFile ? "checked" : ""} />
+      <label for="${id}">🎵 ${esc(fileName)}</label>
+    `;
+    musicList.appendChild(wrap);
+  });
+}
+
+musicSaveBtn?.addEventListener("click", async () => {
+  const checked = document.querySelector('input[name="music-choice"]:checked');
+  if (!checked) {
+    showMusicAlert("Selecione uma música primeiro.", "error");
+    return;
+  }
+
+  try {
+    const password = sessionStorage.getItem("admin_pwd") || ADMIN_PASSWORD;
+    const res = await fetch("/api/moments?action=set-music", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Admin-Password": password,
+      },
+      body: JSON.stringify({ fileName: checked.value }),
     });
-  } catch(e) { musicList.innerHTML = "Erro ao carregar."; }
+    if (!res.ok) {
+      const errData = await res.json();
+      throw new Error(errData.error || "Erro ao salvar música");
+    }
+    showMusicAlert("Música definida para todos os visitantes! 🎶", "success");
+  } catch (e) {
+    console.warn("Erro ao salvar música:", e);
+    showMusicAlert("Erro ao salvar a música escolhida.", "error");
+  }
+});
+
+function showMusicAlert(msg, type) {
+  if (!musicAlert) return;
+  musicAlert.textContent = msg;
+  musicAlert.className = "alert show alert-" + type;
+  setTimeout(() => musicAlert.classList.remove("show"), 4000);
 }
-
-function handleFile(file) {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    currentImageBase64 = e.target.result;
-    previewImg.src = currentImageBase64;
-    imagePreview.style.display = "block";
-  };
-  reader.readAsDataURL(file);
-}
-
-function unlock() {
-  lockScreen.style.display = "none";
-  adminPanel.classList.add("visible");
-  renderList();
-  renderMusicList();
-}
-
-if (sessionStorage.getItem("admin_auth") === "true") unlock();
-
-lockForm.onsubmit = (e) => {
-  e.preventDefault();
-  if (lockPassword.value === ADMIN_PASSWORD) {
-    sessionStorage.setItem("admin_auth", "true");
-    unlock();
-  } else alert("Senha incorreta");
-};
-
-imageInput.onchange = (e) => e.target.files[0] && handleFile(e.target.files[0]);
-
-addForm.onsubmit = async (e) => {
-  e.preventDefault();
-  const newItem = { id: Date.now().toString(), title: itemTitle.value, imageBase64: currentImageBase64 };
-  await fetch("/api/moments", { method: "POST", headers: { "X-Admin-Password": ADMIN_PASSWORD, "Content-Type": "application/json" }, body: JSON.stringify(newItem) });
-  renderList();
-  addForm.reset();
-  imagePreview.style.display = "none";
-};
-
-clearAllBtn.onclick = async () => { if(confirm("Apagar tudo?")) { await fetch("/api/moments?clearAll=true", { method: "DELETE", headers: { "X-Admin-Password": ADMIN_PASSWORD } }); renderList(); } };

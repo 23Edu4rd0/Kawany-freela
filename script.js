@@ -136,7 +136,6 @@ function initCounter() {
     const now = new Date();
     const startDate = new Date(startMs);
 
-    // 1. Calcula anos e meses de forma simples
     let years = now.getFullYear() - startDate.getFullYear();
     let months = now.getMonth() - startDate.getMonth();
     let days = now.getDate() - startDate.getDate();
@@ -151,21 +150,17 @@ function initCounter() {
       years--;
     }
 
-    // 2. Para horas, minutos e segundos, calculamos a diferença 
-    // entre o agora e o "aniversário do mês/dia atual"
     const lastAnniversary = new Date(
       now.getFullYear(),
       now.getMonth(),
       now.getDate(),
       startDate.getHours(),
       startDate.getMinutes(),
-      startDate.getSeconds()
+      startDate.getSeconds(),
     );
 
     let diffMs = now - lastAnniversary;
 
-    // Se a diferença for negativa (ainda não chegamos na hora do dia),
-    // pegamos o dia anterior como referência
     if (diffMs < 0) {
       const yesterday = new Date(lastAnniversary);
       yesterday.setDate(yesterday.getDate() - 1);
@@ -248,7 +243,8 @@ function initGallery() {
 
   function showImage(index) {
     currentIndex =
-      ((index % galleryImgs.length) + galleryImgs.length) % galleryImgs.length;
+      ((index % galleryImgs.length) + galleryImgs.length) %
+      galleryImgs.length;
     const data = galleryImgs[currentIndex];
 
     lbImg.style.opacity = "0";
@@ -397,23 +393,35 @@ function initTypewriter() {
   }
 }
 
-function initMusicPlayer() {
+// ─────────────────────────────────────────
+// Música de fundo — busca a escolha do admin
+// direto do servidor, então vale para TODOS
+// os visitantes (não é mais por navegador).
+// ─────────────────────────────────────────
+async function initMusicPlayer() {
   const btn = document.getElementById("music-btn");
   const audio = document.getElementById("bg-audio");
-  const source = audio.querySelector("source");
+  const source = audio?.querySelector("source");
 
   if (!btn || !audio || !source) return;
 
-  // 1. Busca o nome do arquivo que você salvou no Admin
-  const activeFile = localStorage.getItem("kawany_active_music_file");
-
-  // 2. Se houver uma música selecionada, atualiza o player
-  if (activeFile) {
-    source.setAttribute("src", `assets/music/${activeFile}`);
-    audio.load(); // Importante: recarrega o áudio com o novo caminho
+  let activeFile = "Um_Amor_Puro.mp3";
+  try {
+    const res = await fetch("/api/moments?action=get-active-music");
+    if (res.ok) {
+      const data = await res.json();
+      if (data.activeFile) activeFile = data.activeFile;
+    }
+  } catch (e) {
+    console.warn(
+      "Não foi possível buscar a música definida pelo admin, usando a padrão:",
+      e,
+    );
   }
 
-  // Lógica de play/pause original
+  source.setAttribute("src", `assets/music/${activeFile}`);
+  audio.load();
+
   btn.addEventListener("click", async () => {
     if (audio.paused) {
       try {
@@ -434,42 +442,6 @@ function initMusicPlayer() {
     btn.setAttribute("aria-pressed", "false");
     btn.setAttribute("aria-label", "Tocar música de fundo");
   });
-}
-
-function getAdminMusic() {
-  try {
-    const stored = localStorage.getItem("kawany_admin_music");
-    const customMusic = stored ? JSON.parse(stored) : [];
-    
-    // Verificar se música padrão está ativada
-    const defaultMusicEnabled = localStorage.getItem("kawany_default_music_enabled");
-    const isDefaultEnabled = defaultMusicEnabled !== null ? defaultMusicEnabled === "true" : true;
-    
-    // Incluir música padrão se ativada
-    const allMusic = [];
-    if (isDefaultEnabled) {
-      allMusic.push({
-        id: "default-um-amor-puro",
-        title: "Um Amor Puro",
-        musicBase64: CONFIG.musicSrc,
-        isDefault: true
-      });
-    }
-    
-    // Adicionar músicas customizadas
-    allMusic.push(...customMusic);
-    
-    return allMusic;
-  } catch (e) {
-    console.error("Erro ao carregar músicas:", e);
-    // Retornar música padrão como fallback
-    return [{
-      id: "default-um-amor-puro",
-      title: "Um Amor Puro",
-      musicBase64: CONFIG.musicSrc,
-      isDefault: true
-    }];
-  }
 }
 
 function initNextAnniversary() {
