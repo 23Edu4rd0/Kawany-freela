@@ -4,6 +4,20 @@ import path from "path";
 
 let redis = null;
 
+async function getRedis() {
+  const redisUrl = process.env.moments_REDIS_URL;
+  if (!redisUrl) return null; // Retorna null se não tiver banco configurado
+
+  if (!redis) {
+    redis = createClient({ url: redisUrl });
+    redis.on("error", (err) => console.error("Erro Redis:", err));
+    await redis.connect();
+  } else if (!redis.isOpen) {
+    await redis.connect();
+  }
+  return redis;
+}
+
 export default async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,DELETE,POST");
@@ -11,77 +25,61 @@ export default async (req, res) => {
 
   if (req.method === "OPTIONS") return res.status(200).end();
 
-  // 1. Endpoint para Listar Músicas (Sem Redis, lê da pasta correta)
-  if (req.method === "GET" && req.query.action === "list-music") {
-    try {
-      // CORREÇÃO: Caminho apontando para /assets/music na raiz do projeto
-      const musicDir = path.join(process.cwd(), "assets", "music");
-      
-      console.log("Buscando músicas em:", musicDir); 
-      
-      const files = fs.readdirSync(musicDir).filter(file => 
-        /\.(mp3|wav|ogg|aac)$/i.test(file)
-      );
-      return res.status(200).json(files);
-    } catch (err) {
-      console.error("Erro ao ler pasta de músicas:", err);
-      return res.status(500).json({ error: "Erro ao ler pasta: " + err.message });
-    }
-  }
-
-  // --- Lógica do Redis (Conexão para Momentos) ---
-  try {
-    if (!redis) {
-      const redisUrl = process.env.moments_REDIS_URL;
-      if (!redisUrl) throw new Error("Configuração ausente");
-      redis = createClient({ url: redisUrl });
-      await redis.connect();
-    } else if (!redis.isOpen) {
-      await redis.connect();
-    }
-  } catch (connError) {
-    console.error("Erro de conexão Redis:", connError);
-    return res.status(503).json({ error: "Falha de conexão com banco." });
-  }
-
+  const db = await getRedis();
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "kawany2025";
 
-  // 2. Endpoints do Redis (CRUD de Momentos)
+  // --- MÚSICAS: LISTAR ---
+  if (req.query.action === "list-music") {
+    try {
+      const musicDir = path.join(process.cwd(), "assets", "music");
+      const files = fs.readdirSync(musicDir).filter(f => /\.(mp3|wav|ogg|aac)$/i.test(f));
+      return res.status(200).json(files);
+    } catch (err) { return res.status(500).json({ error: "Erro ao ler pasta" }); }
+  }
+
+  // --- MÚSICAS: GET ATIVA ---
+  if (req.query.action === "get-active-music") {
+    const activeFile = db ? await db.get("active-music") : "Um_Amor_Puro.mp3";
+    return res.status(200).json({ activeFile: activeFile || "Um_Amor_Puro.mp3" });
+  }
+
+  // --- MÚSICAS: SET ATIVA ---
+  if (req.method === "POST" && req.query.action === "set-music") {
+    if (req.headers["x-admin-password"] !== ADMIN_PASSWORD) return res.status(401).json({ error: "Senha incorreta." });
+    if (db) await db.set("active-music", req.body.fileName);
+    return res.status(200).json({ success: true });
+  }
+
+  // --- MOMENTOS ---
+  if (!db) return res.status(503).json({ error: "Banco de dados indisponível" });
+
   try {
     if (req.method === "GET") {
-      const result = await redis.get("moments");
+      const result = await db.get("moments");
       return res.status(200).json(result ? JSON.parse(result) : []);
     }
 
     if (req.method === "POST") {
       if (req.headers["x-admin-password"] !== ADMIN_PASSWORD) return res.status(401).json({ error: "Senha incorreta." });
-      
-      const result = await redis.get("moments");
+      const result = await db.get("moments");
       const moments = result ? JSON.parse(result) : [];
       moments.push(req.body);
-      await redis.set("moments", JSON.stringify(moments));
+      await db.set("moments", JSON.stringify(moments));
       return res.status(200).json({ success: true });
     }
 
     if (req.method === "DELETE") {
       if (req.headers["x-admin-password"] !== ADMIN_PASSWORD) return res.status(401).json({ error: "Senha incorreta." });
-      
-      const { id, clearAll } = req.query;
-      if (clearAll === "true") {
-        await redis.del("moments");
-        return res.status(200).json({ success: true });
+      if (req.query.clearAll === "true") await db.del("moments");
+      else {
+        const result = await db.get("moments");
+        let moments = result ? JSON.parse(result) : [];
+        moments = moments.filter(i => i.id !== req.query.id);
+        await db.set("moments", JSON.stringify(moments));
       }
-      
-      const result = await redis.get("moments");
-      let moments = result ? JSON.parse(result) : [];
-      moments = moments.filter((item) => item.id !== id);
-      await redis.set("moments", JSON.stringify(moments));
       return res.status(200).json({ success: true });
     }
-
-    return res.status(405).json({ error: "Método não permitido." });
   } catch (error) {
-    console.error("Erro na API de Momentos:", error);
-    return res.status(500).json({ error: "Erro interno do servidor." });
+    return res.status(500).json({ error: "Erro interno." });
   }
 };
