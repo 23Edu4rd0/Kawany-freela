@@ -1,0 +1,97 @@
+
+.music-player__expanded {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + var(--space-sm));
+  width: 220px;
+  background: var(--clr-surface);
+  color: var(--clr-text);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow:
+    0 4px 6px rgba(59, 35, 20, 0.05),
+    0 20px 60px rgba(59, 35, 20, 0.15);
+  display: none;
+  flex-direction: column;
+  gap: var(--space-sm);
+  opacity: 0;
+  transform: translateY(8px) scale(0.97);
+  transition:
+    opacity var(--dur-fast) var(--ease-smooth),
+    transform var(--dur-fast) var(--ease-smooth);
+}
+
+.music-player.is-open .music-player__expanded {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.music-player__track {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--clr-brown);
+  text-align: center;
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.music-player__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.music-player__controls button {
+  background: transparent;
+  border: none;
+  color: var(--clr-brown-md);
+  font-size: 1rem;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition:
+    background var(--dur-fast),
+    color var(--dur-fast),
+    transform var(--dur-fast);
+}
+
+.music-player__controls button:hover,
+.music-player__controls button:focus-visible {
+  background: rgba(192, 113, 79, 0.12);
+  color: var(--clr-terra);
+  transform: scale(1.08);
+}
+
+#music-playpause {
+  background: var(--clr-terra);
+  color: #fff;
+  width: 38px;
+  height: 38px;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(192, 113, 79, 0.3);
+}
+
+#music-playpause:hover,
+#music-playpause:focus-visible {
+  background: var(--clr-brown);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+@media (max-width: 480px) {
+  .music-player__expanded {
+    width: 190px;
+    padding: var(--space-sm) var(--space-md);
+  }
+}

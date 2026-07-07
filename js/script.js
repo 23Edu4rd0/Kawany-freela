@@ -52,20 +52,12 @@ function initIntro() {
     main.removeAttribute("inert");
 
     const audio = document.getElementById("bg-audio");
-    const musicBtn = document.getElementById("music-btn");
-    if (audio && musicBtn) {
-      audio.load();
-      audio
-        .play()
-        .then(() => {
-          musicBtn.setAttribute("aria-pressed", "true");
-          musicBtn.setAttribute("aria-label", "Pausar música de fundo");
-        })
-        .catch(() => {
-          console.info(
-            "Autoplay bloqueado pelo navegador — use o botão de música.",
-          );
-        });
+    if (audio) {
+      audio.play().catch(() => {
+        console.info(
+          "Autoplay bloqueado pelo navegador — use o botão de música.",
+        );
+      });
     }
 
     const musicPlayer = document.getElementById("music-player");
@@ -394,54 +386,134 @@ function initTypewriter() {
 }
 
 // ─────────────────────────────────────────
-// Música de fundo — busca a escolha do admin
-// direto do servidor, então vale para TODOS
-// os visitantes (não é mais por navegador).
+// Mini player de música — abre um painel com
+// nome da faixa e controles (play/pause, anterior,
+// próxima, reiniciar). A playlist vem de assets/music
+// e a faixa inicial é a que o admin escolheu (vale
+// para todos os visitantes).
 // ─────────────────────────────────────────
 async function initMusicPlayer() {
-  const btn = document.getElementById("music-btn");
+  const panel = document.getElementById("music-player");
+  const toggleBtn = document.getElementById("music-btn");
+  const trackName = document.getElementById("music-track-name");
+  const playPauseBtn = document.getElementById("music-playpause");
+  const prevBtn = document.getElementById("music-prev");
+  const nextBtn = document.getElementById("music-next");
+  const restartBtn = document.getElementById("music-restart");
   const audio = document.getElementById("bg-audio");
   const source = audio?.querySelector("source");
 
-  if (!btn || !audio || !source) return;
+  if (!panel || !toggleBtn || !audio || !source) return;
 
-  let activeFile = "Um_Amor_Puro.mp3";
+  let playlist = ["Um_Amor_Puro.mp3"];
+  let currentTrackIndex = 0;
+
   try {
-    const res = await fetch("/api/moments?action=get-active-music");
-    if (res.ok) {
-      const data = await res.json();
-      if (data.activeFile) activeFile = data.activeFile;
+    const [filesRes, activeRes] = await Promise.all([
+      fetch("/api/moments?action=list-music"),
+      fetch("/api/moments?action=get-active-music"),
+    ]);
+
+    if (filesRes.ok) {
+      const files = await filesRes.json();
+      if (files && files.length) playlist = files;
+    }
+    if (activeRes.ok) {
+      const data = await activeRes.json();
+      if (data.activeFile) {
+        const idx = playlist.indexOf(data.activeFile);
+        currentTrackIndex = idx !== -1 ? idx : 0;
+      }
     }
   } catch (e) {
     console.warn(
-      "Não foi possível buscar a música definida pelo admin, usando a padrão:",
+      "Não foi possível buscar a playlist, usando a música padrão:",
       e,
     );
   }
 
-  source.setAttribute("src", `assets/music/${activeFile}`);
-  audio.load();
+  function trackLabel(fileName) {
+    return fileName.replace(/\.[^/.]+$/, "").replace(/[_-]+/g, " ");
+  }
 
-  btn.addEventListener("click", async () => {
+  function loadTrack(index, autoplay) {
+    currentTrackIndex =
+      ((index % playlist.length) + playlist.length) % playlist.length;
+    const fileName = playlist[currentTrackIndex];
+    const wasPlaying = !audio.paused;
+
+    source.setAttribute("src", `assets/music/${fileName}`);
+    audio.load();
+    if (trackName) trackName.textContent = trackLabel(fileName);
+
+    if (autoplay || wasPlaying) {
+      audio.play().catch(() => {});
+    }
+  }
+
+  loadTrack(currentTrackIndex, false);
+
+  function updatePlayPauseUI() {
+    const isPlaying = !audio.paused;
+    toggleBtn.classList.toggle("is-playing", isPlaying);
+    toggleBtn.setAttribute("aria-pressed", String(isPlaying));
+    if (playPauseBtn) {
+      playPauseBtn.textContent = isPlaying ? "⏸" : "▶";
+      playPauseBtn.setAttribute(
+        "aria-label",
+        isPlaying ? "Pausar música" : "Tocar música",
+      );
+    }
+  }
+
+  // O botão flutuante agora abre/fecha o painel do mini player
+  toggleBtn.addEventListener("click", () => {
+    const isOpen = panel.classList.toggle("is-open");
+    toggleBtn.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  playPauseBtn?.addEventListener("click", async (e) => {
+    e.stopPropagation();
     if (audio.paused) {
       try {
         await audio.play();
-        btn.setAttribute("aria-pressed", "true");
-        btn.setAttribute("aria-label", "Pausar música de fundo");
       } catch (err) {
         console.warn("Playback bloqueado pelo navegador:", err);
       }
     } else {
       audio.pause();
-      btn.setAttribute("aria-pressed", "false");
-      btn.setAttribute("aria-label", "Tocar música de fundo");
     }
   });
 
-  audio.addEventListener("pause", () => {
-    btn.setAttribute("aria-pressed", "false");
-    btn.setAttribute("aria-label", "Tocar música de fundo");
+  prevBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    loadTrack(currentTrackIndex - 1, true);
   });
+
+  nextBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    loadTrack(currentTrackIndex + 1, true);
+  });
+
+  restartBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+  });
+
+  // Fecha o painel ao clicar fora dele
+  document.addEventListener("click", (e) => {
+    if (panel.classList.contains("is-open") && !panel.contains(e.target)) {
+      panel.classList.remove("is-open");
+      toggleBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  audio.addEventListener("play", updatePlayPauseUI);
+  audio.addEventListener("pause", updatePlayPauseUI);
+  audio.addEventListener("ended", () => loadTrack(currentTrackIndex + 1, true));
+
+  updatePlayPauseUI();
 }
 
 function initNextAnniversary() {

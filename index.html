@@ -28,7 +28,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Great+Vibes&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/music_player.css" />
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
@@ -496,11 +497,19 @@
     </div>
   </dialog>
 
+  <!-- ════════════════════════════════════════════════════════════
+       MINI PLAYER DE MÚSICA
+       Toque no botão flutuante pra abrir o painel com nome da
+       faixa e controles (play/pause, anterior, próxima, reiniciar).
+       A playlist é lida de assets/music; a faixa inicial é a que
+       o admin escolheu no painel — vale pra todos os visitantes.
+  ════════════════════════════════════════════════════════════════ -->
   <div class="music-player" id="music-player" aria-label="Controle de música" role="region">
     <button
       class="music-btn"
       id="music-btn"
-      aria-label="Tocar música de fundo"
+      aria-label="Abrir player de música"
+      aria-expanded="false"
       aria-pressed="false"
     >
       <span class="music-btn__icon music-btn__icon--play" aria-hidden="true">♪</span>
@@ -510,11 +519,21 @@
       </span>
     </button>
 
-    <audio id="bg-audio" loop preload="none">
+    <div class="music-player__expanded" id="music-expanded">
+      <p class="music-player__track" id="music-track-name">Carregando…</p>
+      <div class="music-player__controls">
+        <button id="music-prev" type="button" aria-label="Música anterior">⏮</button>
+        <button id="music-playpause" type="button" aria-label="Tocar música">▶</button>
+        <button id="music-next" type="button" aria-label="Próxima música">⏭</button>
+        <button id="music-restart" type="button" aria-label="Reiniciar música">↺</button>
+      </div>
+    </div>
+
+    <audio id="bg-audio" preload="none">
       <source src="assets/music/Um_Amor_Puro.mp3" type="audio/mpeg" />
     </audio>
   </div>
 
-  <script src="script.js"></script>
+  <script src="js/script.js"></script>
 </body>
 </html>
