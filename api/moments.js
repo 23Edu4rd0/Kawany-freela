@@ -1,6 +1,5 @@
 import { createClient } from "redis";
 
-// Mantemos a variável global, mas VAZIA no início
 let redis = null;
 
 export default async (req, res) => {
@@ -20,7 +19,6 @@ export default async (req, res) => {
     return;
   }
 
-  // 1. Conexão Tardia (Lazy Connection)
   try {
     if (!redis) {
       const redisUrl = process.env.moments_REDIS_URL;
@@ -34,7 +32,6 @@ export default async (req, res) => {
           .json({ error: "Configuração do banco ausente." });
       }
 
-      // Só cria o cliente agora, quando temos certeza absoluta que a URL existe
       redis = createClient({ url: redisUrl });
 
       redis.on("error", (err) => console.error("Erro Interno Redis:", err));
@@ -53,14 +50,12 @@ export default async (req, res) => {
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "kawany2025";
 
   try {
-    // ── BUSCAR (GET) ──
     if (req.method === "GET") {
       const result = await redis.get("moments");
       const moments = result ? JSON.parse(result) : [];
       return res.status(200).json(moments);
     }
 
-    // ── SALVAR (POST) ──
     if (req.method === "POST") {
       if (req.headers["x-admin-password"] !== ADMIN_PASSWORD) {
         return res.status(401).json({ error: "Senha incorreta." });
@@ -80,7 +75,6 @@ export default async (req, res) => {
       return res.status(200).json({ success: true, item: newItem });
     }
 
-    // ── DELETAR (DELETE) ──
     if (req.method === "DELETE") {
       if (req.headers["x-admin-password"] !== ADMIN_PASSWORD) {
         return res.status(401).json({ error: "Senha incorreta." });

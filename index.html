@@ -5,14 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#5C3D2E" />
 
-  <!-- ════════════════════════════════════════════════
-       SEO & Open Graph — edit these for your link preview
-       (WhatsApp / Telegram / iMessage all read these tags)
-  ════════════════════════════════════════════════ -->
   <title>Kawany &amp; Vitor — 1 Ano Juntos 🤎</title>
   <meta name="description" content="A melhor parte do nosso relacionamento é que podemos ser exatamente quem somos, com todas as nossas loucuras e esquisitices. E o mais bonito é que são justamente essas esquisitices que fazem eu me apaixonar cada vez mais por você todos os dias." />
 
-  <!-- Open Graph (link preview card) -->
   <meta property="og:type"        content="website" />
   <meta property="og:title"       content="Kawany &amp; Vitor — 1 Ano Juntos 🤎" />
   <meta property="og:description" content="A melhor parte do nosso relacionamento é que podemos ser exatamente quem somos, com todas as nossas loucuras e esquisitices. E o mais bonito é que são justamente essas esquisitices que fazem eu me apaixonar cada vez mais por você todos os dias." />
@@ -21,21 +16,14 @@
   <meta property="og:image:height" content="630" />
   <meta property="og:locale"      content="pt_BR" />
 
-  <!-- Twitter/X card (also used by some apps) -->
   <meta name="twitter:card"        content="summary_large_image" />
   <meta name="twitter:title"       content="Kawany &amp; Vitor — 1 Ano Juntos" />
   <meta name="twitter:description" content="Nossa História de amor em comemoração ao nosso primeiro ano." />
   <meta name="twitter:image"       content="assets/photos/pedido.jpeg" />
 
-  <!-- Favicon -->
   <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
 
-  <!-- ════════════════════════════════════════════════
-       Google Fonts — the only external dependency
-       Cormorant Garamond: romantic display/heading font
-       Jost: clean, modern body font
-  ════════════════════════════════════════════════ -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Great+Vibes&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -44,15 +32,8 @@
 </head>
 <body>
 
-  <!-- ════════════════════════════════════════════════════════════
-       01 · INTRO / REVEAL SCREEN
-       A full-screen "envelope" that hides everything until clicked.
-       The `inert` attribute removes all children from tab/focus
-       order while the cover is visible — re-enabled on open.
-  ════════════════════════════════════════════════════════════════ -->
   <div id="intro-cover" role="dialog" aria-modal="true" aria-label="Abrir site de aniversário">
     <div class="intro-envelope">
-      <!-- Decorative floating hearts around the envelope -->
       <span class="env-heart" aria-hidden="true">💜</span>
       <span class="env-heart" aria-hidden="true">💜</span>
       <span class="env-heart" aria-hidden="true">💜</span>
@@ -74,19 +55,11 @@
     <p class="intro-hint" aria-hidden="true">toque para abrir</p>
   </div>
 
-  <!-- ════════════════════════════════════════════════════════════
-       MAIN CONTENT — hidden (inert) until intro is dismissed
-  ════════════════════════════════════════════════════════════════ -->
   <main id="main-content" inert aria-label="Conteúdo do site de aniversário">
 
-    <!-- ──────────────────────────────────────────────
-         02 · HERO SECTION
-    ────────────────────────────────────────────── -->
     <section id="hero" class="hero" aria-labelledby="hero-names">
-      <!-- Animated background particles (CSS + JS) -->
       <div class="hero__particles" aria-hidden="true" id="hero-particles"></div>
 
-      <!-- Floating gradient orbs for depth -->
       <div class="hero__orb hero__orb--1" aria-hidden="true"></div>
       <div class="hero__orb hero__orb--2" aria-hidden="true"></div>
 
@@ -108,22 +81,17 @@
         </time>
       </div>
 
-      <!-- Scroll cue -->
       <a href="#counter" class="hero__scroll-cue" aria-label="Role para baixo">
         <span class="hero__scroll-arrow" aria-hidden="true"></span>
       </a>
     </section>
 
-    <!-- ──────────────────────────────────────────────
-         03 · LIVE COUNTER
-    ────────────────────────────────────────────── -->
     <section id="counter" class="counter" aria-labelledby="counter-heading">
       <div class="section-inner">
         <h2 id="counter-heading" class="section-title reveal-up">
           <em>Juntos há</em>
         </h2>
 
-        <!-- Dividor Ornamental -->
         <div class="ornament-divider reveal-up">
           <svg viewBox="0 0 400 30" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path d="M 10 15 L 160 15" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
@@ -137,7 +105,6 @@
           </svg>
         </div>
 
-        <!-- Each counter unit is a live region so screen readers announce updates -->
         <div class="counter__grid" aria-live="polite" aria-atomic="true" role="timer">
           <div class="counter__unit reveal-up" style="--delay:0.00s">
             <span class="counter__number" id="cnt-years">0</span>
@@ -167,9 +134,6 @@
       </div>
     </section>
 
-    <!-- ──────────────────────────────────────────────
-         04 · TIMELINE
-    ────────────────────────────────────────────── -->
     <section id="timeline" class="timeline" aria-labelledby="timeline-heading">
       <div class="section-inner">
         <h2 id="timeline-heading" class="section-title reveal-up">
@@ -177,7 +141,6 @@
         </h2>
         <p class="section-subtitle reveal-up">momentos que guardaremos para sempre</p>
 
-        <!-- Dividor Ornamental -->
         <div class="ornament-divider reveal-up">
           <svg viewBox="0 0 400 30" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path d="M 10 15 L 160 15" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
@@ -192,12 +155,6 @@
         </div>
 
         <div class="timeline__track" role="list">
-
-          <!--
-            MILESTONE TEMPLATE — duplicate this block for each milestone.
-            Fill in: datetime (ISO), the display date text, photo path, alt text, caption.
-            Photos go in assets/photos/ — recommend 800×600 px WebP.
-          -->
 
           <article class="timeline__item reveal-left" role="listitem">
             <div class="timeline__photo-wrap">
@@ -256,15 +213,10 @@
             </div>
           </article>
 
-          <!-- Add as many <article class="timeline__item"> blocks as you need -->
-
         </div>
       </div>
     </section>
 
-    <!-- ──────────────────────────────────────────────
-         05 · PHOTO GALLERY
-    ────────────────────────────────────────────── -->
     <section id="gallery" class="gallery" aria-labelledby="gallery-heading">
       <div class="section-inner">
         <h2 id="gallery-heading" class="section-title reveal-up">
@@ -272,7 +224,6 @@
         </h2>
         <p class="section-subtitle reveal-up">Achou mesmo que tínhamos perdido nosso passado? Consegui resgatar algumas fotos de nossos momentos, aproveite as recordações ♥️</p>
 
-        <!-- Dividor Ornamental -->
         <div class="ornament-divider reveal-up">
           <svg viewBox="0 0 400 30" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path d="M 10 15 L 160 15" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
@@ -286,12 +237,6 @@
           </svg>
         </div>
 
-        <!--
-          GALLERY GRID
-          Add as many <figure> items as you like.
-          data-src  = full-resolution image for lightbox
-          data-caption = optional caption shown in lightbox
-        -->
         <div class="gallery__grid" id="gallery-grid" role="list">
 
           <figure class="gallery__item reveal-fade" role="listitem">
@@ -402,36 +347,24 @@
             </button>
           </figure>
 
-          <!-- Add more <figure class="gallery__item"> blocks as needed -->
         </div>
       </div>
     </section>
 
-    <!-- ──────────────────────────────────────────────
-         06 · LOVE LETTER
-    ────────────────────────────────────────────── -->
     <section id="letter" class="letter" aria-labelledby="letter-heading">
       <div class="section-inner letter__inner">
         <div class="letter__paper letter__paper--closed reveal-up" id="love-letter-paper">
-          <!-- Closed Cover Overlay (Visible when closed) -->
           <div class="letter__cover" id="letter-cover">
             <div class="letter__cover-seal" aria-hidden="true">🤎</div>
             <p class="letter__cover-title">Você recebeu uma carta de amor</p>
             <button type="button" class="letter__cover-btn" id="letter-open-btn">Abrir Carta</button>
           </div>
 
-          <!-- The actual letter content (hidden until open) -->
           <div class="letter__content" id="letter-content">
             <h2 id="letter-heading" class="letter__heading">
               Para você,
             </h2>
 
-            <!--
-              The letter text is revealed character-by-character when the section
-              enters the viewport (typewriter effect, handled in script.js).
-              Replace ahhh eu quero salarioo with your message.
-              You can use <br> for line breaks inside the text.
-            -->
             <div class="letter__body" id="letter-body" aria-label="Carta de amor">
               <p class="letter__text" id="letter-text" data-typewriter>
                 ahhh eu quero salarioo
@@ -444,7 +377,6 @@
             </p>
           </div>
 
-          <!-- Decorative corner flourishes -->
           <span class="letter__corner letter__corner--tl" aria-hidden="true">
             <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
               <path d="M 5 5 L 85 5 M 5 5 L 5 85" stroke-width="2.5" stroke-linecap="round" />
@@ -497,9 +429,6 @@
       </div>
     </section>
 
-    <!-- ──────────────────────────────────────────────
-         07 · FOOTER + NEXT ANNIVERSARY COUNTDOWN
-    ────────────────────────────────────────────── -->
     <footer class="site-footer" role="contentinfo">
       <div class="footer__inner">
         <p class="footer__names">
@@ -507,7 +436,6 @@
         </p>
         <p class="footer__date" id="footer-start-date">2025-07-19</p>
 
-        <!-- Next anniversary countdown -->
         <div class="footer__next-anniversary">
           <p class="footer__next-label">próximo aniversário em</p>
           <p class="footer__next-counter" id="next-anniversary-counter" aria-live="polite">
@@ -520,19 +448,13 @@
         </p>
       </div>
 
-      <!-- Floating ambient leaves -->
       <div class="footer__leaves" aria-hidden="true">
         <span>🍂</span><span>🍁</span><span>🍂</span>
       </div>
     </footer>
 
-  </main><!-- /main-content -->
+  </main>
 
-  <!-- ════════════════════════════════════════════════════════════
-       LIGHTBOX — portal overlay for the photo gallery
-       Using native <dialog> for correct focus-trap, Esc key,
-       and accessibility semantics out of the box.
-  ════════════════════════════════════════════════════════════════ -->
   <dialog
     id="lightbox"
     class="lightbox"
@@ -540,14 +462,12 @@
     aria-modal="true"
   >
     <div class="lightbox__inner">
-      <!-- Previous photo button -->
       <button
         class="lightbox__nav lightbox__nav--prev"
         id="lb-prev"
         aria-label="Foto anterior"
       >&#8592;</button>
 
-      <!-- Photo container -->
       <figure class="lightbox__figure">
         <img
           id="lb-img"
@@ -560,14 +480,12 @@
         <figcaption id="lb-caption" class="lightbox__caption"></figcaption>
       </figure>
 
-      <!-- Next photo button -->
       <button
         class="lightbox__nav lightbox__nav--next"
         id="lb-next"
         aria-label="Próxima foto"
       >&#8594;</button>
 
-      <!-- Close button -->
       <button
         class="lightbox__close"
         id="lb-close"
@@ -576,11 +494,6 @@
     </div>
   </dialog>
 
-  <!-- ════════════════════════════════════════════════════════════
-       MUSIC PLAYER — discreet floating button
-       No autoplay with sound (browsers block it by policy).
-       The button only appears after the user interacts with the page.
-  ════════════════════════════════════════════════════════════════ -->
   <div class="music-player" id="music-player" aria-label="Controle de música" role="region">
     <button
       class="music-btn"
@@ -590,17 +503,11 @@
     >
       <span class="music-btn__icon music-btn__icon--play" aria-hidden="true">♪</span>
       <span class="music-btn__icon music-btn__icon--pause" aria-hidden="true">⏸</span>
-      <!-- Animated bars shown while playing -->
       <span class="music-btn__bars" aria-hidden="true">
         <span></span><span></span><span></span><span></span>
       </span>
     </button>
 
-    <!--
-      Add your music file to assets/music/
-      Supported: mp3, ogg, aac
-      Recommended: ~2-4 min instrumental, ≤3 MB
-    -->
     <audio id="bg-audio" loop preload="none">
       <source src="assets/music/Um_Amor_Puro.mp3" type="audio/mpeg" />
     </audio>
