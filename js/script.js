@@ -317,7 +317,12 @@ function initTypewriter() {
 
   if (!letterEl || !paperEl || !openBtn) return;
 
-  const fullText = letterEl.innerHTML;
+  const fullText = letterEl.innerHTML
+    .split(/<br\s*\/?>/i)
+    .map((chunk) => chunk.replace(/\s+/g, " ").trim())
+    .join("<br>")
+    .trim();
+
   letterEl.innerHTML = "";
 
   let started = false;
@@ -330,9 +335,7 @@ function initTypewriter() {
     paperEl.classList.add("letter__paper--open");
 
     setTimeout(() => {
-      if (coverEl) {
-        coverEl.style.display = "none";
-      }
+      if (coverEl) coverEl.style.display = "none";
       typeNextChar(0);
     }, 600);
   }
@@ -343,9 +346,7 @@ function initTypewriter() {
   });
 
   paperEl.addEventListener("click", () => {
-    if (paperEl.classList.contains("letter__paper--closed")) {
-      openLetter();
-    }
+    if (paperEl.classList.contains("letter__paper--closed")) openLetter();
   });
 
   openBtn.addEventListener("keydown", (e) => {
@@ -356,9 +357,7 @@ function initTypewriter() {
   });
 
   function typeNextChar(index) {
-    if (index === 0) {
-      letterEl.classList.add("is-typing");
-    }
+    if (index === 0) letterEl.classList.add("is-typing");
 
     if (index >= fullText.length) {
       letterEl.classList.remove("is-typing");
@@ -368,20 +367,15 @@ function initTypewriter() {
 
     if (fullText.substring(index, index + 4) === "<br>") {
       letterEl.innerHTML += "<br>";
-      setTimeout(() => typeNextChar(index + 4), CONFIG.typewriterSpeed * 6);
-      return;
-    }
-    if (fullText.substring(index, index + 5) === "<br/>") {
-      letterEl.innerHTML += "<br/>";
-      setTimeout(() => typeNextChar(index + 5), CONFIG.typewriterSpeed * 6);
+      setTimeout(() => typeNextChar(index + 4), CONFIG.typewriterSpeed * 3);
       return;
     }
 
     letterEl.innerHTML += fullText[index];
 
     const char = fullText[index];
-    const pause = /[.,!?;:\n]/.test(char)
-      ? CONFIG.typewriterSpeed * 6
+    const pause = /[.,!?;:]/.test(char)
+      ? CONFIG.typewriterSpeed * 4
       : CONFIG.typewriterSpeed;
 
     setTimeout(() => typeNextChar(index + 1), pause);

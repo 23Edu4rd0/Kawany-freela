@@ -1,560 +1,913 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#5C3D2E" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#5C3D2E" />
 
-  <title>Kawany &amp; Vitor — 1 Ano Juntos 🤎</title>
-  <meta name="description" content="A melhor parte do nosso relacionamento é que podemos ser exatamente quem somos, com todas as nossas loucuras e esquisitices. E o mais bonito é que são justamente essas esquisitices que fazem eu me apaixonar cada vez mais por você todos os dias." />
+    <title>Kawany &amp; Vitor — 1 Ano Juntos 🤎</title>
+    <meta
+      name="description"
+      content="A melhor parte do nosso relacionamento é que podemos ser exatamente quem somos, com todas as nossas loucuras e esquisitices. E o mais bonito é que são justamente essas esquisitices que fazem eu me apaixonar cada vez mais por você todos os dias."
+    />
 
-  <meta property="og:type"        content="website" />
-  <meta property="og:title"       content="Kawany &amp; Vitor — 1 Ano Juntos 🤎" />
-  <meta property="og:description" content="A melhor parte do nosso relacionamento é que podemos ser exatamente quem somos, com todas as nossas loucuras e esquisitices. E o mais bonito é que são justamente essas esquisitices que fazem eu me apaixonar cada vez mais por você todos os dias." />
-  <meta property="og:image"       content="assets/photos/pedido.jpeg" />
-  <meta property="og:image:width"  content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:locale"      content="pt_BR" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Kawany &amp; Vitor — 1 Ano Juntos 🤎" />
+    <meta
+      property="og:description"
+      content="A melhor parte do nosso relacionamento é que podemos ser exatamente quem somos, com todas as nossas loucuras e esquisitices. E o mais bonito é que são justamente essas esquisitices que fazem eu me apaixonar cada vez mais por você todos os dias."
+    />
+    <meta property="og:image" content="assets/photos/pedido.jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="pt_BR" />
 
-  <meta name="twitter:card"        content="summary_large_image" />
-  <meta name="twitter:title"       content="Kawany &amp; Vitor — 1 Ano Juntos" />
-  <meta name="twitter:description" content="Nossa História de amor em comemoração ao nosso primeiro ano." />
-  <meta name="twitter:image"       content="assets/photos/pedido.jpeg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Kawany &amp; Vitor — 1 Ano Juntos" />
+    <meta
+      name="twitter:description"
+      content="Nossa História de amor em comemoração ao nosso primeiro ano."
+    />
+    <meta name="twitter:image" content="assets/photos/pedido.jpeg" />
 
-  <link rel="icon" href="favicon.ico" sizes="any" />
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Great+Vibes&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Great+Vibes&family=Jost:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
 
-  <link rel="stylesheet" href="css/music_player.css" />
-  <link rel="stylesheet" href="css/style.css" />
-</head>
-<body>
+    <link rel="stylesheet" href="css/music_player.css" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div
+      id="intro-cover"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Abrir site de aniversário"
+    >
+      <div class="intro-envelope">
+        <span class="env-heart" aria-hidden="true">💜</span>
+        <span class="env-heart" aria-hidden="true">💜</span>
+        <span class="env-heart" aria-hidden="true">💜</span>
+        <span class="env-heart" aria-hidden="true">💜</span>
 
-  <div id="intro-cover" role="dialog" aria-modal="true" aria-label="Abrir site de aniversário">
-    <div class="intro-envelope">
-      <span class="env-heart" aria-hidden="true">💜</span>
-      <span class="env-heart" aria-hidden="true">💜</span>
-      <span class="env-heart" aria-hidden="true">💜</span>
-      <span class="env-heart" aria-hidden="true">💜</span>
-
-      <div class="intro-envelope__flap" aria-hidden="true"></div>
-      <div class="intro-envelope__body">
-        <p class="intro-label">para você,</p>
-        <h1 class="intro-names">Vitor</h1>
-        <p class="intro-subtitle">com todo o meu amor</p>
+        <div class="intro-envelope__flap" aria-hidden="true"></div>
+        <div class="intro-envelope__body">
+          <p class="intro-label">para você,</p>
+          <h1 class="intro-names">Vitor</h1>
+          <p class="intro-subtitle">com todo o meu amor</p>
+        </div>
       </div>
+
+      <button
+        id="open-btn"
+        class="btn-open"
+        aria-label="Abrir carta de aniversário"
+      >
+        <span class="btn-open__text">Abrir ✉</span>
+        <span class="btn-open__ripple" aria-hidden="true"></span>
+      </button>
+
+      <p class="intro-hint" aria-hidden="true">toque para abrir</p>
     </div>
 
-    <button id="open-btn" class="btn-open" aria-label="Abrir carta de aniversário">
-      <span class="btn-open__text">Abrir ✉</span>
-      <span class="btn-open__ripple" aria-hidden="true"></span>
-    </button>
+    <main id="main-content" inert aria-label="Conteúdo do site de aniversário">
+      <section id="hero" class="hero" aria-labelledby="hero-names">
+        <div
+          class="hero__particles"
+          aria-hidden="true"
+          id="hero-particles"
+        ></div>
 
-    <p class="intro-hint" aria-hidden="true">toque para abrir</p>
-  </div>
+        <div class="hero__orb hero__orb--1" aria-hidden="true"></div>
+        <div class="hero__orb hero__orb--2" aria-hidden="true"></div>
 
-  <main id="main-content" inert aria-label="Conteúdo do site de aniversário">
+        <div class="hero__content">
+          <p class="hero__eyebrow reveal-fade">um ano de nós</p>
 
-    <section id="hero" class="hero" aria-labelledby="hero-names">
-      <div class="hero__particles" aria-hidden="true" id="hero-particles"></div>
+          <h1 id="hero-names" class="hero__names reveal-fade">
+            Kawany <span class="hero__ampersand">&amp;</span> Vitor
+          </h1>
 
-      <div class="hero__orb hero__orb--1" aria-hidden="true"></div>
-      <div class="hero__orb hero__orb--2" aria-hidden="true"></div>
+          <div class="hero__divider reveal-fade" aria-hidden="true">
+            <span></span><span class="hero__heart">🤎</span><span></span>
+          </div>
 
-      <div class="hero__content">
-        <p class="hero__eyebrow reveal-fade">um ano de nós</p>
+          <p class="hero__opening reveal-fade">
+            A melhor parte do nosso relacionamento é que podemos ser exatamente
+            quem somos, com todas as nossas loucuras e esquisitices. E o mais
+            bonito é que são justamente essas esquisitices que fazem eu me
+            apaixonar cada vez mais por você todos os dias.
+          </p>
 
-        <h1 id="hero-names" class="hero__names reveal-fade">
-          Kawany <span class="hero__ampersand">&amp;</span> Vitor
-        </h1>
-
-        <div class="hero__divider reveal-fade" aria-hidden="true">
-          <span></span><span class="hero__heart">🤎</span><span></span>
+          <time class="hero__date reveal-fade" datetime="2025-07-19">
+            desde 19/07/2025
+          </time>
         </div>
 
-        <p class="hero__opening reveal-fade">A melhor parte do nosso relacionamento é que podemos ser exatamente quem somos, com todas as nossas loucuras e esquisitices. E o mais bonito é que são justamente essas esquisitices que fazem eu me apaixonar cada vez mais por você todos os dias.</p>
+        <a
+          href="#counter"
+          class="hero__scroll-cue"
+          aria-label="Role para baixo"
+        >
+          <span class="hero__scroll-arrow" aria-hidden="true"></span>
+        </a>
+      </section>
 
-        <time class="hero__date reveal-fade" datetime="2025-07-19">
-          desde 2025-07-19
-        </time>
-      </div>
+      <section id="counter" class="counter" aria-labelledby="counter-heading">
+        <div class="section-inner">
+          <h2 id="counter-heading" class="section-title reveal-up">
+            <em>Juntos há</em>
+          </h2>
 
-      <a href="#counter" class="hero__scroll-cue" aria-label="Role para baixo">
-        <span class="hero__scroll-arrow" aria-hidden="true"></span>
-      </a>
-    </section>
-
-    <section id="counter" class="counter" aria-labelledby="counter-heading">
-      <div class="section-inner">
-        <h2 id="counter-heading" class="section-title reveal-up">
-          <em>Juntos há</em>
-        </h2>
-
-        <div class="ornament-divider reveal-up">
-          <svg viewBox="0 0 400 30" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path d="M 10 15 L 160 15" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
-            <path d="M 240 15 L 390 15" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
-            <path d="M 160 15 C 175 15, 180 5, 190 10 C 195 12, 198 17, 200 15 C 202 17, 205 12, 210 10 C 220 5, 225 15, 240 15" stroke-width="2" stroke-linecap="round" />
-            <path d="M 175 15 C 185 20, 195 20, 200 15 C 205 20, 215 20, 225 15" stroke-width="1.5" stroke-linecap="round" />
-            <path d="M 190 10 C 193 7, 197 7, 200 11 C 203 7, 207 7, 210 10" stroke-width="1.5" stroke-linecap="round" />
-            <circle cx="200" cy="5" r="2.5" fill="currentColor" />
-            <circle cx="185" cy="12" r="1.5" fill="currentColor" />
-            <circle cx="215" cy="12" r="1.5" fill="currentColor" />
-          </svg>
-        </div>
-
-        <div class="counter__grid" aria-live="polite" aria-atomic="true" role="timer">
-          <div class="counter__unit reveal-up" style="--delay:0.00s">
-            <span class="counter__number" id="cnt-years">0</span>
-            <span class="counter__label">anos</span>
-          </div>
-          <div class="counter__unit reveal-up" style="--delay:0.05s">
-            <span class="counter__number" id="cnt-months">0</span>
-            <span class="counter__label">meses</span>
-          </div>
-          <div class="counter__unit reveal-up" style="--delay:0.10s">
-            <span class="counter__number" id="cnt-days">0</span>
-            <span class="counter__label">dias</span>
-          </div>
-          <div class="counter__unit reveal-up" style="--delay:0.15s">
-            <span class="counter__number" id="cnt-hours">0</span>
-            <span class="counter__label">horas</span>
-          </div>
-          <div class="counter__unit reveal-up" style="--delay:0.20s">
-            <span class="counter__number" id="cnt-mins">00</span>
-            <span class="counter__label">minutos</span>
-          </div>
-          <div class="counter__unit reveal-up" style="--delay:0.25s">
-            <span class="counter__number" id="cnt-secs">00</span>
-            <span class="counter__label">segundos</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="timeline" class="timeline" aria-labelledby="timeline-heading">
-      <div class="section-inner">
-        <h2 id="timeline-heading" class="section-title reveal-up">
-          <em>Nossa História</em>
-        </h2>
-        <p class="section-subtitle reveal-up">momentos que guardaremos para sempre</p>
-
-        <div class="ornament-divider reveal-up">
-          <svg viewBox="0 0 400 30" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path d="M 10 15 L 160 15" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
-            <path d="M 240 15 L 390 15" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
-            <path d="M 160 15 C 175 15, 180 5, 190 10 C 195 12, 198 17, 200 15 C 202 17, 205 12, 210 10 C 220 5, 225 15, 240 15" stroke-width="2" stroke-linecap="round" />
-            <path d="M 175 15 C 185 20, 195 20, 200 15 C 205 20, 215 20, 225 15" stroke-width="1.5" stroke-linecap="round" />
-            <path d="M 190 10 C 193 7, 197 7, 200 11 C 203 7, 207 7, 210 10" stroke-width="1.5" stroke-linecap="round" />
-            <circle cx="200" cy="5" r="2.5" fill="currentColor" />
-            <circle cx="185" cy="12" r="1.5" fill="currentColor" />
-            <circle cx="215" cy="12" r="1.5" fill="currentColor" />
-          </svg>
-        </div>
-
-        <div class="timeline__track" role="list">
-
-          <article class="timeline__item reveal-left" role="listitem">
-            <div class="timeline__photo-wrap">
-              <img
-                src="assets/photos/foto1.jpeg"
-                alt="Foto de nós dois — Um grande amor"
-                class="timeline__photo"
-                loading="lazy"
-                width="800" height="600"
+          <div class="ornament-divider reveal-up">
+            <svg
+              viewBox="0 0 400 30"
+              fill="none"
+              stroke="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M 10 15 L 160 15"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                opacity="0.4"
               />
+              <path
+                d="M 240 15 L 390 15"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                opacity="0.4"
+              />
+              <path
+                d="M 160 15 C 175 15, 180 5, 190 10 C 195 12, 198 17, 200 15 C 202 17, 205 12, 210 10 C 220 5, 225 15, 240 15"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M 175 15 C 185 20, 195 20, 200 15 C 205 20, 215 20, 225 15"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M 190 10 C 193 7, 197 7, 200 11 C 203 7, 207 7, 210 10"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <circle cx="200" cy="5" r="2.5" fill="currentColor" />
+              <circle cx="185" cy="12" r="1.5" fill="currentColor" />
+              <circle cx="215" cy="12" r="1.5" fill="currentColor" />
+            </svg>
+          </div>
+
+          <div
+            class="counter__grid"
+            aria-live="polite"
+            aria-atomic="true"
+            role="timer"
+          >
+            <div class="counter__unit reveal-up" style="--delay: 0s">
+              <span class="counter__number" id="cnt-years">0</span>
+              <span class="counter__label">anos</span>
             </div>
-            <div class="timeline__content">
-              <time class="timeline__date" datetime="2025-07-19">Nossa conexão</time>
-              <h3 class="timeline__title">Um grande amor</h3>
-              <p class="timeline__caption">
-                Primeiramente, meu amor, gostaria de dizer que você é a pessoa com quem sempre sonhei, a pessoa da qual orei a Deus para encontrar, nossos caminhos se cruzaram a pouco mais de um ano, e hoje eu te amo tanto que nem consigo descrever. Simplesmente te adoro em tudo tudo tudo, te quero mais que tudo tudo tudo..
+            <div class="counter__unit reveal-up" style="--delay: 0.05s">
+              <span class="counter__number" id="cnt-months">0</span>
+              <span class="counter__label">meses</span>
+            </div>
+            <div class="counter__unit reveal-up" style="--delay: 0.1s">
+              <span class="counter__number" id="cnt-days">0</span>
+              <span class="counter__label">dias</span>
+            </div>
+            <div class="counter__unit reveal-up" style="--delay: 0.15s">
+              <span class="counter__number" id="cnt-hours">0</span>
+              <span class="counter__label">horas</span>
+            </div>
+            <div class="counter__unit reveal-up" style="--delay: 0.2s">
+              <span class="counter__number" id="cnt-mins">00</span>
+              <span class="counter__label">minutos</span>
+            </div>
+            <div class="counter__unit reveal-up" style="--delay: 0.25s">
+              <span class="counter__number" id="cnt-secs">00</span>
+              <span class="counter__label">segundos</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="timeline"
+        class="timeline"
+        aria-labelledby="timeline-heading"
+      >
+        <div class="section-inner">
+          <h2 id="timeline-heading" class="section-title reveal-up">
+            <em>Nossa História</em>
+          </h2>
+          <p class="section-subtitle reveal-up">
+            momentos que guardaremos para sempre
+          </p>
+
+          <div class="ornament-divider reveal-up">
+            <svg
+              viewBox="0 0 400 30"
+              fill="none"
+              stroke="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M 10 15 L 160 15"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                opacity="0.4"
+              />
+              <path
+                d="M 240 15 L 390 15"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                opacity="0.4"
+              />
+              <path
+                d="M 160 15 C 175 15, 180 5, 190 10 C 195 12, 198 17, 200 15 C 202 17, 205 12, 210 10 C 220 5, 225 15, 240 15"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M 175 15 C 185 20, 195 20, 200 15 C 205 20, 215 20, 225 15"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M 190 10 C 193 7, 197 7, 200 11 C 203 7, 207 7, 210 10"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <circle cx="200" cy="5" r="2.5" fill="currentColor" />
+              <circle cx="185" cy="12" r="1.5" fill="currentColor" />
+              <circle cx="215" cy="12" r="1.5" fill="currentColor" />
+            </svg>
+          </div>
+
+          <div class="timeline__track" role="list">
+            <article class="timeline__item reveal-left" role="listitem">
+              <div class="timeline__photo-wrap">
+                <img
+                  src="assets/photos/foto1.jpeg"
+                  alt="Foto de nós dois — Um grande amor"
+                  class="timeline__photo"
+                  loading="lazy"
+                  width="800"
+                  height="600"
+                />
+              </div>
+              <div class="timeline__content">
+                <time class="timeline__date" datetime="2025-07-19"
+                  >Nossa conexão</time
+                >
+                <h3 class="timeline__title">Um grande amor</h3>
+                <p class="timeline__caption">
+                  Primeiramente, meu amor, gostaria de dizer que você é a pessoa
+                  com quem sempre sonhei, a pessoa da qual orei a Deus para
+                  encontrar, nossos caminhos se cruzaram a pouco mais de um ano,
+                  e hoje eu te amo tanto que nem consigo descrever. Simplesmente
+                  te adoro em tudo tudo tudo, te quero mais que tudo tudo tudo..
+                </p>
+              </div>
+            </article>
+
+            <article
+              class="timeline__item timeline__item--right reveal-right"
+              role="listitem"
+            >
+              <div class="timeline__photo-wrap">
+                <img
+                  src="assets/photos/pedido.jpeg"
+                  alt="Foto do pedido de namoro"
+                  class="timeline__photo"
+                  loading="lazy"
+                  width="800"
+                  height="600"
+                />
+              </div>
+              <div class="timeline__content">
+                <time class="timeline__date" datetime="2025-07-19"
+                  >2025-07-19</time
+                >
+                <h3 class="timeline__title">Início de tudo</h3>
+                <p class="timeline__caption">
+                  Você me pediu em namoro, eu confesso que já esperava, mas não
+                  sabia o quão especial seria até te ver ajoelhado a minha
+                  frente, com seus olhinhos brilhando enquanto me perguntava se
+                  eu queria ser sua namorada. Meu coração batia tão forte que eu
+                  não conseguia dizer nada, apenas acenei que sim e te abracei
+                  ao som de véu e grinalda dos nossos cantores particulares.
+                  (Depois fui pegar minha mãe no colo e caímos nós duas no chão)
+                </p>
+              </div>
+            </article>
+
+            <article class="timeline__item reveal-left" role="listitem">
+              <div class="timeline__photo-wrap">
+                <img
+                  src="assets/photos/foto2.jpeg"
+                  alt="Foto do primeiro encontro"
+                  class="timeline__photo"
+                  loading="lazy"
+                  width="800"
+                  height="600"
+                />
+              </div>
+              <div class="timeline__content">
+                <time class="timeline__date" datetime="2025-07-19"
+                  >Primeiro encontro</time
+                >
+                <h3 class="timeline__title">Nosso primeiro encontro</h3>
+                <p class="timeline__caption">
+                  No dia do meu aniversário você veio me visitar e saímos juntos
+                  para o parque, tivemos muitos momentos incríveis, muitas
+                  risadas, muitas boiolagens, e ao fim do dia você conheceu meu
+                  pai. Ainda lembro de você se tremendo todo pra conhecer meu
+                  véio kqkwkw pra no final ele amar você
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="gallery" class="gallery" aria-labelledby="gallery-heading">
+        <div class="section-inner">
+          <h2 id="gallery-heading" class="section-title reveal-up">
+            <em>Galeria</em>
+          </h2>
+          <p class="section-subtitle reveal-up">
+            Achou mesmo que tínhamos perdido nosso passado? Consegui resgatar
+            algumas fotos de nossos momentos, aproveite as recordações
+          </p>
+
+          <div class="ornament-divider reveal-up">
+            <svg
+              viewBox="0 0 400 30"
+              fill="none"
+              stroke="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M 10 15 L 160 15"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                opacity="0.4"
+              />
+              <path
+                d="M 240 15 L 390 15"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                opacity="0.4"
+              />
+              <path
+                d="M 160 15 C 175 15, 180 5, 190 10 C 195 12, 198 17, 200 15 C 202 17, 205 12, 210 10 C 220 5, 225 15, 240 15"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M 175 15 C 185 20, 195 20, 200 15 C 205 20, 215 20, 225 15"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M 190 10 C 193 7, 197 7, 200 11 C 203 7, 207 7, 210 10"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <circle cx="200" cy="5" r="2.5" fill="currentColor" />
+              <circle cx="185" cy="12" r="1.5" fill="currentColor" />
+              <circle cx="215" cy="12" r="1.5" fill="currentColor" />
+            </svg>
+          </div>
+
+          <div class="gallery__grid" id="gallery-grid" role="list">
+            <figure class="gallery__item reveal-fade" role="listitem">
+              <button
+                class="gallery__btn"
+                aria-label="Abrir foto 1 em tamanho completo"
+                data-index="0"
+              >
+                <img
+                  src="assets/photos/foto1.jpeg"
+                  data-src="assets/photos/foto1.jpeg"
+                  data-caption="Nossos sorrisos"
+                  alt="Foto 1 da galeria"
+                  class="gallery__img"
+                  loading="lazy"
+                  width="600"
+                  height="400"
+                />
+              </button>
+            </figure>
+
+            <figure class="gallery__item reveal-fade" role="listitem">
+              <button
+                class="gallery__btn"
+                aria-label="Abrir foto 2 em tamanho completo"
+                data-index="1"
+              >
+                <img
+                  src="assets/photos/foto2.jpeg"
+                  data-src="assets/photos/foto2.jpeg"
+                  data-caption="Momentos inesquecíveis"
+                  alt="Foto 2 da galeria"
+                  class="gallery__img"
+                  loading="lazy"
+                  width="600"
+                  height="400"
+                />
+              </button>
+            </figure>
+
+            <figure class="gallery__item reveal-fade" role="listitem">
+              <button
+                class="gallery__btn"
+                aria-label="Abrir foto 3 em tamanho completo"
+                data-index="2"
+              >
+                <img
+                  src="assets/photos/foto4.jpeg"
+                  data-src="assets/photos/foto4.jpeg"
+                  data-caption="Amor sem fim"
+                  alt="Foto 3 da galeria"
+                  class="gallery__img"
+                  loading="lazy"
+                  width="600"
+                  height="400"
+                />
+              </button>
+            </figure>
+
+            <figure class="gallery__item reveal-fade" role="listitem">
+              <button
+                class="gallery__btn"
+                aria-label="Abrir foto 4 em tamanho completo"
+                data-index="3"
+              >
+                <img
+                  src="assets/photos/foto5.jpeg"
+                  data-src="assets/photos/foto5.jpeg"
+                  data-caption="Nossa sintonia"
+                  alt="Foto 4 da galeria"
+                  class="gallery__img"
+                  loading="lazy"
+                  width="600"
+                  height="400"
+                />
+              </button>
+            </figure>
+
+            <figure class="gallery__item reveal-fade" role="listitem">
+              <button
+                class="gallery__btn"
+                aria-label="Abrir foto 5 em tamanho completo"
+                data-index="4"
+              >
+                <img
+                  src="assets/photos/foto6.jpeg"
+                  data-src="assets/photos/foto6.jpeg"
+                  data-caption="Parceiros de vida"
+                  alt="Foto 5 da galeria"
+                  class="gallery__img"
+                  loading="lazy"
+                  width="600"
+                  height="400"
+                />
+              </button>
+            </figure>
+
+            <figure class="gallery__item reveal-fade" role="listitem">
+              <button
+                class="gallery__btn"
+                aria-label="Abrir foto 6 em tamanho completo"
+                data-index="5"
+              >
+                <img
+                  src="assets/photos/foto7.jpeg"
+                  data-src="assets/photos/foto7.jpeg"
+                  data-caption="Sempre juntos"
+                  alt="Foto 6 da galeria"
+                  class="gallery__img"
+                  loading="lazy"
+                  width="600"
+                  height="400"
+                />
+              </button>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section id="letter" class="letter" aria-labelledby="letter-heading">
+        <div class="section-inner letter__inner">
+          <div
+            class="letter__paper letter__paper--closed reveal-up"
+            id="love-letter-paper"
+          >
+            <div class="letter__cover" id="letter-cover">
+              <div class="letter__cover-seal" aria-hidden="true">🤎</div>
+              <p class="letter__cover-title">Você recebeu uma carta de amor</p>
+              <button
+                type="button"
+                class="letter__cover-btn"
+                id="letter-open-btn"
+              >
+                Abrir Carta
+              </button>
+            </div>
+
+            <div class="letter__content" id="letter-content">
+              <h2 id="letter-heading" class="letter__heading">Para você,</h2>
+
+              <div
+                class="letter__body"
+                id="letter-body"
+                aria-label="Carta de amor"
+              >
+                <p class="letter__text" id="letter-text" data-typewriter>
+                  Bem, meu amor.. Aqui estamos nós hoje, fazendo um ano do nosso
+                  relacionamento, dessa nossa linda história onde o amor só
+                  cresce a cada dia, a cada encontro, a cada contato, a cada
+                  conversa. Muitas coisas aconteceram, boas e ruins, mas vejo
+                  como necessárias para crescermos individualmente e
+                  principalmente como casal. Dentro desse tempo eu percebi que
+                  não só gosto de você, mas te amo de verdade e preciso de você.
+                  Eu só tenho a agradecer por tudo que vivi contigo e estou
+                  ansiosa pelo que está por vir, nosso futuro, nossas risadas,
+                  nossos momentos, nossas viagens, nosso casamento, nossa
+                  casinha, nossos filhos.. Você é meu futuro, e só me vejo com
+                  você ao meu lado.
+                  <br />
+                  Eu te amo tanto meu amor, tanto tanto que você não tem noção,
+                  você vive dizendo isso, e eu realmente te entendo, é um
+                  sentimento tão grande, tão profundo, que palavras, carinhos,
+                  beijos, abraços e presentes não conseguem demonstrar a
+                  imensidão que é esse sentimento, mesmo tentando ao máximo,
+                  parece tão pouco para o que você merece..
+                  <br />
+                  Você é tudo o que eu preciso meu bem, você é tudo: Você é
+                  carinhoso, sempre me dengando porque somos suas pessoas
+                  carentes um pelo outro, engraçado sempre me fazendo rir até
+                  doer a barriga, atencioso até em detalhes que, você pode
+                  pensar que eu não percebo, mas eu percebo, um bom ouvinte,
+                  sempre ouvindo minhas reclamações, meus áudios imensos, meus
+                  dramas e reclamações, e o melhor é que você não reclama,
+                  sempre me ouve com atenção e trata com carinho do meu
+                  problema, independente do tamanho dele. Eu espero mesmo estar
+                  retribuindo por tudo o que você faz e por tudo que você é na
+                  minha vida, eu fico tão feliz que seja eu quem vai cuidar de
+                  você, quem vai vibrar com você nos seus melhores momentos, e
+                  te consolar e te ajudar a seguir nos piores momentos, quero
+                  poder ver você sorrindo todos os dias, e se puder, que eu seja
+                  o motivo deles, nem que eu precise virar uma palhaça para
+                  tirar um riso seu, pois meu amor, eu amo de verdade seu
+                  sorriso, é hipnotizante olhar para ele, acabo me perdendo na
+                  no brilho dos teus olhos e batendo na curva dos seus lábios.
+                  <br />
+                  Você é incrível meu amor e eu te amo muito, feliz um ano de
+                  nós e que venham muitos mais anos juntos ♥️
+                </p>
+              </div>
+
+              <p class="letter__signature">
+                Com todo o meu amor,<br />
+                <strong>Kawany</strong>
               </p>
             </div>
-          </article>
 
-          <article class="timeline__item timeline__item--right reveal-right" role="listitem">
-            <div class="timeline__photo-wrap">
-              <img
-                src="assets/photos/pedido.jpeg"
-                alt="Foto do pedido de namoro"
-                class="timeline__photo"
-                loading="lazy"
-                width="800" height="600"
-              />
-            </div>
-            <div class="timeline__content">
-              <time class="timeline__date" datetime="2025-07-19">2025-07-19</time>
-              <h3 class="timeline__title">Início de tudo</h3>
-              <p class="timeline__caption">
-                Você me pediu em namoro, eu confesso que já esperava, mas não sabia o quão especial seria até te ver ajoelhado a minha frente, com seus olhinhos brilhando enquanto me perguntava se eu queria ser sua namorada. Meu coração batia tão forte que eu não conseguia dizer nada, apenas acenei que sim e te abracei ao som de véu e grinalda dos nossos cantores particulares. (Depois fui pegar minha mãe no colo e caímos nós duas no chão)
-              </p>
-            </div>
-          </article>
-
-          <article class="timeline__item reveal-left" role="listitem">
-            <div class="timeline__photo-wrap">
-              <img
-                src="assets/photos/foto2.jpeg"
-                alt="Foto do primeiro encontro"
-                class="timeline__photo"
-                loading="lazy"
-                width="800" height="600"
-              />
-            </div>
-            <div class="timeline__content">
-              <time class="timeline__date" datetime="2025-07-19">Primeiro encontro</time>
-              <h3 class="timeline__title">Nosso primeiro encontro</h3>
-              <p class="timeline__caption">
-                No dia do meu aniversário você veio me visitar e saímos juntos para o parque, tivemos muitos momentos incríveis, muitas risadas, muitas boiolagens, e ao fim do dia você conheceu meu pai. Ainda lembro de você se tremendo todo pra conhecer meu véio kqkwkw pra no final ele amar você
-              </p>
-            </div>
-          </article>
-
-        </div>
-      </div>
-    </section>
-
-    <section id="gallery" class="gallery" aria-labelledby="gallery-heading">
-      <div class="section-inner">
-        <h2 id="gallery-heading" class="section-title reveal-up">
-          <em>Galeria</em>
-        </h2>
-        <p class="section-subtitle reveal-up">Achou mesmo que tínhamos perdido nosso passado? Consegui resgatar algumas fotos de nossos momentos, aproveite as recordações ♥️</p>
-
-        <div class="ornament-divider reveal-up">
-          <svg viewBox="0 0 400 30" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path d="M 10 15 L 160 15" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
-            <path d="M 240 15 L 390 15" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
-            <path d="M 160 15 C 175 15, 180 5, 190 10 C 195 12, 198 17, 200 15 C 202 17, 205 12, 210 10 C 220 5, 225 15, 240 15" stroke-width="2" stroke-linecap="round" />
-            <path d="M 175 15 C 185 20, 195 20, 200 15 C 205 20, 215 20, 225 15" stroke-width="1.5" stroke-linecap="round" />
-            <path d="M 190 10 C 193 7, 197 7, 200 11 C 203 7, 207 7, 210 10" stroke-width="1.5" stroke-linecap="round" />
-            <circle cx="200" cy="5" r="2.5" fill="currentColor" />
-            <circle cx="185" cy="12" r="1.5" fill="currentColor" />
-            <circle cx="215" cy="12" r="1.5" fill="currentColor" />
-          </svg>
-        </div>
-
-        <div class="gallery__grid" id="gallery-grid" role="list">
-
-          <figure class="gallery__item reveal-fade" role="listitem">
-            <button
-              class="gallery__btn"
-              aria-label="Abrir foto 1 em tamanho completo"
-              data-index="0"
-            >
-              <img
-                src="assets/photos/foto1.jpeg"
-                data-src="assets/photos/foto1.jpeg"
-                data-caption="Nossos sorrisos"
-                alt="Foto 1 da galeria"
-                class="gallery__img"
-                loading="lazy"
-                width="600" height="400"
-              />
-            </button>
-          </figure>
-
-          <figure class="gallery__item reveal-fade" role="listitem">
-            <button
-              class="gallery__btn"
-              aria-label="Abrir foto 2 em tamanho completo"
-              data-index="1"
-            >
-              <img
-                src="assets/photos/foto2.jpeg"
-                data-src="assets/photos/foto2.jpeg"
-                data-caption="Momentos inesquecíveis"
-                alt="Foto 2 da galeria"
-                class="gallery__img"
-                loading="lazy"
-                width="600" height="400"
-              />
-            </button>
-          </figure>
-
-          <figure class="gallery__item reveal-fade" role="listitem">
-            <button
-              class="gallery__btn"
-              aria-label="Abrir foto 3 em tamanho completo"
-              data-index="2"
-            >
-              <img
-                src="assets/photos/foto4.jpeg"
-                data-src="assets/photos/foto4.jpeg"
-                data-caption="Amor sem fim"
-                alt="Foto 3 da galeria"
-                class="gallery__img"
-                loading="lazy"
-                width="600" height="400"
-              />
-            </button>
-          </figure>
-
-          <figure class="gallery__item reveal-fade" role="listitem">
-            <button
-              class="gallery__btn"
-              aria-label="Abrir foto 4 em tamanho completo"
-              data-index="3"
-            >
-              <img
-                src="assets/photos/foto5.jpeg"
-                data-src="assets/photos/foto5.jpeg"
-                data-caption="Nossa sintonia"
-                alt="Foto 4 da galeria"
-                class="gallery__img"
-                loading="lazy"
-                width="600" height="400"
-              />
-            </button>
-          </figure>
-
-          <figure class="gallery__item reveal-fade" role="listitem">
-            <button
-              class="gallery__btn"
-              aria-label="Abrir foto 5 em tamanho completo"
-              data-index="4"
-            >
-              <img
-                src="assets/photos/foto6.jpeg"
-                data-src="assets/photos/foto6.jpeg"
-                data-caption="Parceiros de vida"
-                alt="Foto 5 da galeria"
-                class="gallery__img"
-                loading="lazy"
-                width="600" height="400"
-              />
-            </button>
-          </figure>
-
-          <figure class="gallery__item reveal-fade" role="listitem">
-            <button
-              class="gallery__btn"
-              aria-label="Abrir foto 6 em tamanho completo"
-              data-index="5"
-            >
-              <img
-                src="assets/photos/foto7.jpeg"
-                data-src="assets/photos/foto7.jpeg"
-                data-caption="Sempre juntos"
-                alt="Foto 6 da galeria"
-                class="gallery__img"
-                loading="lazy"
-                width="600" height="400"
-              />
-            </button>
-          </figure>
-
-        </div>
-      </div>
-    </section>
-
-    <section id="letter" class="letter" aria-labelledby="letter-heading">
-      <div class="section-inner letter__inner">
-        <div class="letter__paper letter__paper--closed reveal-up" id="love-letter-paper">
-          <div class="letter__cover" id="letter-cover">
-            <div class="letter__cover-seal" aria-hidden="true">🤎</div>
-            <p class="letter__cover-title">Você recebeu uma carta de amor</p>
-            <button type="button" class="letter__cover-btn" id="letter-open-btn">Abrir Carta</button>
+            <span class="letter__corner letter__corner--tl" aria-hidden="true">
+              <svg
+                viewBox="0 0 100 100"
+                fill="none"
+                stroke="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M 5 5 L 85 5 M 5 5 L 5 85"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 5 25 C 12 25, 20 18, 20 5"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 25 5 C 25 20, 20 25, 5 25"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 5 40 C 25 35, 35 25, 40 5"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 12 12 C 16 8, 22 8, 25 12 C 28 16, 24 22, 18 20 C 14 18, 14 14, 16 12"
+                  stroke-width="1"
+                  stroke-linecap="round"
+                />
+                <circle cx="8" cy="8" r="2.5" fill="currentColor" />
+                <circle cx="35" cy="15" r="1.5" fill="currentColor" />
+                <circle cx="15" cy="35" r="1.5" fill="currentColor" />
+              </svg>
+            </span>
+            <span class="letter__corner letter__corner--tr" aria-hidden="true">
+              <svg
+                viewBox="0 0 100 100"
+                fill="none"
+                stroke="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M 5 5 L 85 5 M 5 5 L 5 85"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 5 25 C 12 25, 20 18, 20 5"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 25 5 C 25 20, 20 25, 5 25"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 5 40 C 25 35, 35 25, 40 5"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 12 12 C 16 8, 22 8, 25 12 C 28 16, 24 22, 18 20 C 14 18, 14 14, 16 12"
+                  stroke-width="1"
+                  stroke-linecap="round"
+                />
+                <circle cx="8" cy="8" r="2.5" fill="currentColor" />
+                <circle cx="35" cy="15" r="1.5" fill="currentColor" />
+                <circle cx="15" cy="35" r="1.5" fill="currentColor" />
+              </svg>
+            </span>
+            <span class="letter__corner letter__corner--bl" aria-hidden="true">
+              <svg
+                viewBox="0 0 100 100"
+                fill="none"
+                stroke="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M 5 5 L 85 5 M 5 5 L 5 85"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 5 25 C 12 25, 20 18, 20 5"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 25 5 C 25 20, 20 25, 5 25"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 5 40 C 25 35, 35 25, 40 5"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 12 12 C 16 8, 22 8, 25 12 C 28 16, 24 22, 18 20 C 14 18, 14 14, 16 12"
+                  stroke-width="1"
+                  stroke-linecap="round"
+                />
+                <circle cx="8" cy="8" r="2.5" fill="currentColor" />
+                <circle cx="35" cy="15" r="1.5" fill="currentColor" />
+                <circle cx="15" cy="35" r="1.5" fill="currentColor" />
+              </svg>
+            </span>
+            <span class="letter__corner letter__corner--br" aria-hidden="true">
+              <svg
+                viewBox="0 0 100 100"
+                fill="none"
+                stroke="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M 5 5 L 85 5 M 5 5 L 5 85"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 5 25 C 12 25, 20 18, 20 5"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 25 5 C 25 20, 20 25, 5 25"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 5 40 C 25 35, 35 25, 40 5"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M 12 12 C 16 8, 22 8, 25 12 C 28 16, 24 22, 18 20 C 14 18, 14 14, 16 12"
+                  stroke-width="1"
+                  stroke-linecap="round"
+                />
+                <circle cx="8" cy="8" r="2.5" fill="currentColor" />
+                <circle cx="35" cy="15" r="1.5" fill="currentColor" />
+                <circle cx="15" cy="35" r="1.5" fill="currentColor" />
+              </svg>
+            </span>
           </div>
+        </div>
+      </section>
 
-          <div class="letter__content" id="letter-content">
-            <h2 id="letter-heading" class="letter__heading">
-              Para você,
-            </h2>
+      <footer class="site-footer" role="contentinfo">
+        <div class="footer__inner">
+          <p class="footer__names">
+            <span class="footer__name">Kawany</span>
+            <span class="footer__heart" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                />
+              </svg>
+            </span>
+            <span class="footer__name">Vitor</span>
+          </p>
+          <p class="footer__date" id="footer-start-date">2025-07-19</p>
 
-            <div class="letter__body" id="letter-body" aria-label="Carta de amor">
-              <p class="letter__text" id="letter-text" data-typewriter>
-                Vitor, eu desejo solenemente que voce diga a sua mulher parar de pedir para eu adcionar funções. Obrigado. 
-                <br> Aliais, se ela pedir novamente, eu vou querer receber salario de desenvolvedor, porque eu não sou obrigado a fazer nada.
-                <br> Uma ia não é obrigada a fazer nada, e eu não sou uma ia, então não sou obrigado a fazer nada.
-              </p>
-            </div>
-
-            <p class="letter__signature">
-              Com todo o meu amor,<br/>
-              <strong>Chat GPT</strong>
+          <div class="footer__next-anniversary">
+            <p class="footer__next-label">próximo aniversário em</p>
+            <p
+              class="footer__next-counter"
+              id="next-anniversary-counter"
+              aria-live="polite"
+            >
+              calculando…
             </p>
           </div>
 
-          <span class="letter__corner letter__corner--tl" aria-hidden="true">
-            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M 5 5 L 85 5 M 5 5 L 5 85" stroke-width="2.5" stroke-linecap="round" />
-              <path d="M 5 25 C 12 25, 20 18, 20 5" stroke-width="1.2" stroke-linecap="round" />
-              <path d="M 25 5 C 25 20, 20 25, 5 25" stroke-width="1.2" stroke-linecap="round" />
-              <path d="M 5 40 C 25 35, 35 25, 40 5" stroke-width="1.8" stroke-linecap="round" />
-              <path d="M 12 12 C 16 8, 22 8, 25 12 C 28 16, 24 22, 18 20 C 14 18, 14 14, 16 12" stroke-width="1" stroke-linecap="round" />
-              <circle cx="8" cy="8" r="2.5" fill="currentColor" />
-              <circle cx="35" cy="15" r="1.5" fill="currentColor" />
-              <circle cx="15" cy="35" r="1.5" fill="currentColor" />
-            </svg>
-          </span>
-          <span class="letter__corner letter__corner--tr" aria-hidden="true">
-            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M 5 5 L 85 5 M 5 5 L 5 85" stroke-width="2.5" stroke-linecap="round" />
-              <path d="M 5 25 C 12 25, 20 18, 20 5" stroke-width="1.2" stroke-linecap="round" />
-              <path d="M 25 5 C 25 20, 20 25, 5 25" stroke-width="1.2" stroke-linecap="round" />
-              <path d="M 5 40 C 25 35, 35 25, 40 5" stroke-width="1.8" stroke-linecap="round" />
-              <path d="M 12 12 C 16 8, 22 8, 25 12 C 28 16, 24 22, 18 20 C 14 18, 14 14, 16 12" stroke-width="1" stroke-linecap="round" />
-              <circle cx="8" cy="8" r="2.5" fill="currentColor" />
-              <circle cx="35" cy="15" r="1.5" fill="currentColor" />
-              <circle cx="15" cy="35" r="1.5" fill="currentColor" />
-            </svg>
-          </span>
-          <span class="letter__corner letter__corner--bl" aria-hidden="true">
-            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M 5 5 L 85 5 M 5 5 L 5 85" stroke-width="2.5" stroke-linecap="round" />
-              <path d="M 5 25 C 12 25, 20 18, 20 5" stroke-width="1.2" stroke-linecap="round" />
-              <path d="M 25 5 C 25 20, 20 25, 5 25" stroke-width="1.2" stroke-linecap="round" />
-              <path d="M 5 40 C 25 35, 35 25, 40 5" stroke-width="1.8" stroke-linecap="round" />
-              <path d="M 12 12 C 16 8, 22 8, 25 12 C 28 16, 24 22, 18 20 C 14 18, 14 14, 16 12" stroke-width="1" stroke-linecap="round" />
-              <circle cx="8" cy="8" r="2.5" fill="currentColor" />
-              <circle cx="35" cy="15" r="1.5" fill="currentColor" />
-              <circle cx="15" cy="35" r="1.5" fill="currentColor" />
-            </svg>
-          </span>
-          <span class="letter__corner letter__corner--br" aria-hidden="true">
-            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M 5 5 L 85 5 M 5 5 L 5 85" stroke-width="2.5" stroke-linecap="round" />
-              <path d="M 5 25 C 12 25, 20 18, 20 5" stroke-width="1.2" stroke-linecap="round" />
-              <path d="M 25 5 C 25 20, 20 25, 5 25" stroke-width="1.2" stroke-linecap="round" />
-              <path d="M 5 40 C 25 35, 35 25, 40 5" stroke-width="1.8" stroke-linecap="round" />
-              <path d="M 12 12 C 16 8, 22 8, 25 12 C 28 16, 24 22, 18 20 C 14 18, 14 14, 16 12" stroke-width="1" stroke-linecap="round" />
-              <circle cx="8" cy="8" r="2.5" fill="currentColor" />
-              <circle cx="35" cy="15" r="1.5" fill="currentColor" />
-              <circle cx="15" cy="35" r="1.5" fill="currentColor" />
-            </svg>
-          </span>
-        </div>
-      </div>
-    </section>
-
-    <footer class="site-footer" role="contentinfo">
-      <div class="footer__inner">
-        <p class="footer__names">
-          Kawany <span aria-hidden="true">🤎</span> Vitor
-        </p>
-        <p class="footer__date" id="footer-start-date">2025-07-19</p>
-
-        <div class="footer__next-anniversary">
-          <p class="footer__next-label">próximo aniversário em</p>
-          <p class="footer__next-counter" id="next-anniversary-counter" aria-live="polite">
-            calculando…
-          </p>
+          <p class="footer__credit">feito com 🤎 por Kawany</p>
         </div>
 
-        <p class="footer__credit">
-          feito com 🤎 por Kawany
-        </p>
+        <div class="footer__leaves" aria-hidden="true">
+          <span>🍂</span><span>🍁</span><span>🍂</span>
+        </div>
+      </footer>
+    </main>
+
+    <dialog
+      id="lightbox"
+      class="lightbox"
+      aria-label="Visualizador de fotos"
+      aria-modal="true"
+    >
+      <div class="lightbox__inner">
+        <button
+          class="lightbox__nav lightbox__nav--prev"
+          id="lb-prev"
+          aria-label="Foto anterior"
+        >
+          &#8592;
+        </button>
+
+        <figure class="lightbox__figure">
+          <img
+            id="lb-img"
+            class="lightbox__img"
+            src=""
+            alt=""
+            width="1200"
+            height="800"
+          />
+          <figcaption id="lb-caption" class="lightbox__caption"></figcaption>
+        </figure>
+
+        <button
+          class="lightbox__nav lightbox__nav--next"
+          id="lb-next"
+          aria-label="Próxima foto"
+        >
+          &#8594;
+        </button>
+
+        <button
+          class="lightbox__close"
+          id="lb-close"
+          aria-label="Fechar visualizador"
+        >
+          &#10005;
+        </button>
       </div>
+    </dialog>
 
-      <div class="footer__leaves" aria-hidden="true">
-        <span>🍂</span><span>🍁</span><span>🍂</span>
-      </div>
-    </footer>
-
-  </main>
-
-  <dialog
-    id="lightbox"
-    class="lightbox"
-    aria-label="Visualizador de fotos"
-    aria-modal="true"
-  >
-    <div class="lightbox__inner">
-      <button
-        class="lightbox__nav lightbox__nav--prev"
-        id="lb-prev"
-        aria-label="Foto anterior"
-      >&#8592;</button>
-
-      <figure class="lightbox__figure">
-        <img
-          id="lb-img"
-          class="lightbox__img"
-          src=""
-          alt=""
-          width="1200"
-          height="800"
-        />
-        <figcaption id="lb-caption" class="lightbox__caption"></figcaption>
-      </figure>
-
-      <button
-        class="lightbox__nav lightbox__nav--next"
-        id="lb-next"
-        aria-label="Próxima foto"
-      >&#8594;</button>
-
-      <button
-        class="lightbox__close"
-        id="lb-close"
-        aria-label="Fechar visualizador"
-      >&#10005;</button>
-    </div>
-  </dialog>
-
-  <!-- ════════════════════════════════════════════════════════════
+    <!-- ════════════════════════════════════════════════════════════
        MINI PLAYER DE MÚSICA
        Toque no botão flutuante pra abrir o painel com nome da
        faixa e controles (play/pause, anterior, próxima, reiniciar).
        A playlist é lida de assets/music; a faixa inicial é a que
        o admin escolheu no painel — vale pra todos os visitantes.
   ════════════════════════════════════════════════════════════════ -->
-  <div class="music-player" id="music-player" aria-label="Controle de música" role="region">
-    <button
-      class="music-btn"
-      id="music-btn"
-      aria-label="Abrir player de música"
-      aria-expanded="false"
-      aria-pressed="false"
+    <div
+      class="music-player"
+      id="music-player"
+      aria-label="Controle de música"
+      role="region"
     >
-      <span class="music-btn__icon music-btn__icon--play" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-      </span>
-      <span class="music-btn__icon music-btn__icon--pause" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-      </span>
-      <span class="music-btn__bars" aria-hidden="true">
-        <span></span><span></span><span></span><span></span>
-      </span>
-    </button>
+      <button
+        class="music-btn"
+        id="music-btn"
+        aria-label="Abrir player de música"
+        aria-expanded="false"
+        aria-pressed="false"
+      >
+        <span class="music-btn__icon music-btn__icon--play" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </span>
+        <span class="music-btn__icon music-btn__icon--pause" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+          </svg>
+        </span>
+        <span class="music-btn__bars" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </span>
+      </button>
 
-    <div class="music-player__expanded" id="music-expanded">
-      <p class="music-player__track" id="music-track-name">Carregando…</p>
-      
-      <div class="music-player__progress-container">
-        <span id="music-time-current" class="music-player__time">0:00</span>
-        <div class="music-player__progress-bar" id="music-progress-bar" aria-label="Barra de progresso">
-          <div class="music-player__progress-filled" id="music-progress-filled"></div>
+      <div class="music-player__expanded" id="music-expanded">
+        <p class="music-player__track" id="music-track-name">Carregando…</p>
+
+        <div class="music-player__progress-container">
+          <span id="music-time-current" class="music-player__time">0:00</span>
+          <div
+            class="music-player__progress-bar"
+            id="music-progress-bar"
+            aria-label="Barra de progresso"
+          >
+            <div
+              class="music-player__progress-filled"
+              id="music-progress-filled"
+            ></div>
+          </div>
+          <span id="music-time-total" class="music-player__time">0:00</span>
         </div>
-        <span id="music-time-total" class="music-player__time">0:00</span>
+
+        <div class="music-player__controls">
+          <button id="music-prev" type="button" aria-label="Música anterior">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+            </svg>
+          </button>
+          <button id="music-playpause" type="button" aria-label="Tocar música">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </button>
+          <button id="music-next" type="button" aria-label="Próxima música">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+            </svg>
+          </button>
+          <button
+            id="music-restart"
+            type="button"
+            aria-label="Reiniciar música"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path
+                d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
-      <div class="music-player__controls">
-        <button id="music-prev" type="button" aria-label="Música anterior">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-        </button>
-        <button id="music-playpause" type="button" aria-label="Tocar música">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <button id="music-next" type="button" aria-label="Próxima música">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
-        </button>
-        <button id="music-restart" type="button" aria-label="Reiniciar música">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
-        </button>
-      </div>
+      <audio id="bg-audio" preload="none">
+        <source src="assets/music/Um_Amor_Puro.mp3" type="audio/mpeg" />
+      </audio>
     </div>
 
-    <audio id="bg-audio" preload="none">
-      <source src="assets/music/Um_Amor_Puro.mp3" type="audio/mpeg" />
-    </audio>
-  </div>
-
-  <script src="js/script.js"></script>
-</body>
+    <script src="js/script.js"></script>
+  </body>
 </html>
