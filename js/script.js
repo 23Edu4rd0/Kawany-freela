@@ -1,7 +1,7 @@
 const CONFIG = {
   startDate: "2025-07-19",
   typewriterSpeed: 28,
-  musicSrc: "assets/music/Um_Amor_Puro.mp3",
+  musicSrc: "assets/music/Só Você - Tim Maia.mp3",
 };
 
 let globalRevealObserver = null;
@@ -49,19 +49,10 @@ function initIntro() {
 
     main.removeAttribute("inert");
 
-    const audio = document.getElementById("bg-audio");
-    if (audio) {
-      // Dá o play na música e garante que a UI saiba disso imediatamente
-      audio
-        .play()
-        .then(() => {
-          const mainBtn = document.getElementById("music-btn");
-          const playPauseBtn = document.getElementById("music-playpause");
-          if (mainBtn) mainBtn.setAttribute("aria-pressed", "true");
-          if (playPauseBtn) playPauseBtn.textContent = "⏸";
-        })
-        .catch((e) => console.info("Autoplay bloqueado pelo navegador.", e));
-    }
+    // Dispara o play dentro do gesto de clique (obrigatório pra autoplay
+    // funcionar no mobile). Se o navegador bloquear mesmo assim, mostramos
+    // um aviso pro usuário tocar manualmente.
+    tryPlayMusic();
 
     const musicPlayer = document.getElementById("music-player");
     if (musicPlayer) {
@@ -76,6 +67,10 @@ function initIntro() {
     }, 2200);
   }
 }
+
+// Função global exposta pelo initMusicPlayer para permitir que o clique
+// no envelope tente dar play de forma síncrona (gesto de usuário).
+let tryPlayMusic = () => {};
 
 function initParticles() {
   const container = document.getElementById("hero-particles");
@@ -238,8 +233,7 @@ function initGallery() {
 
   function showImage(index) {
     currentIndex =
-      ((index % galleryImgs.length) + galleryImgs.length) %
-      galleryImgs.length;
+      ((index % galleryImgs.length) + galleryImgs.length) % galleryImgs.length;
     const data = galleryImgs[currentIndex];
 
     lbImg.style.opacity = "0";
@@ -388,6 +382,13 @@ function initTypewriter() {
 // próxima, reiniciar). A playlist vem de assets/music
 // e a faixa inicial é a que o admin escolheu (vale
 // para todos os visitantes).
+//
+// FIX: nomes de arquivo com acento (ex: "Só Você...") podem
+// vir do backend com normalização Unicode diferente (NFD vs NFC),
+// o que fazia o código achar que era uma faixa "diferente" da que
+// já estava tocando e chamar audio.load() bem no meio do play
+// disparado pelo clique — matando o autoplay. Corrigido normalizando
+// as strings antes de comparar e usando encodeURI no src.
 // ─────────────────────────────────────────
 async function initMusicPlayer() {
   const playerWrapper = document.getElementById("music-player");
@@ -410,6 +411,7 @@ async function initMusicPlayer() {
 
   let playlist = [];
   let currentIndex = 0;
+  let playRequested = false; // se o usuário já pediu pra tocar (clique no envelope)
 
   function formatTime(seconds) {
     if (isNaN(seconds)) return "0:00";
@@ -418,12 +420,27 @@ async function initMusicPlayer() {
     return `${m}:${s.toString().padStart(2, "0")}`;
   }
 
+  function normalize(str) {
+    return (str || "").normalize("NFC");
+  }
+
+  function showAutoplayFallback() {
+    // Autoplay bloqueado mesmo com gesto — deixa o botão principal
+    // pulsando/destacado pra indicar que precisa de um toque manual.
+    mainBtn.classList.add("needs-tap");
+    playerWrapper.classList.add("is-ready");
+  }
+
   mainBtn.addEventListener("click", () => {
     playerWrapper.classList.toggle("is-open");
     mainBtn.setAttribute(
       "aria-expanded",
       playerWrapper.classList.contains("is-open"),
     );
+    if (mainBtn.classList.contains("needs-tap")) {
+      mainBtn.classList.remove("needs-tap");
+      togglePlay();
+    }
   });
 
   try {
@@ -434,7 +451,9 @@ async function initMusicPlayer() {
     if (resActive.ok) {
       const dataActive = await resActive.json();
       if (playlist.length > 0 && dataActive.activeFile) {
-        const activeIndex = playlist.indexOf(dataActive.activeFile);
+        const activeIndex = playlist.findIndex(
+          (f) => normalize(f) === normalize(dataActive.activeFile),
+        );
         currentIndex = activeIndex !== -1 ? activeIndex : 0;
       }
     }
@@ -442,56 +461,81 @@ async function initMusicPlayer() {
     console.error("Erro ao carregar playlist:", e);
   }
 
-  if (playlist.length === 0) playlist = ["Um_Amor_Puro.mp3"];
+  if (playlist.length === 0) playlist = ["Só Você - Tim Maia.mp3"];
 
-  // Sincronizador infalível de Ícones
-  // Definição dos ícones em SVG à prova de emojis
   const svgPlay = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
   const svgPause = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
 
-  // Sincronizador de Ícones
   function syncIcons() {
     if (!audio.paused) {
-      if (btnPlayPause) btnPlayPause.innerHTML = svgPause; // Injeta o SVG de Pause
+      if (btnPlayPause) btnPlayPause.innerHTML = svgPause;
       mainBtn.setAttribute("aria-pressed", "true");
+      mainBtn.classList.remove("needs-tap");
     } else {
-      if (btnPlayPause) btnPlayPause.innerHTML = svgPlay; // Injeta o SVG de Play
+      if (btnPlayPause) btnPlayPause.innerHTML = svgPlay;
       mainBtn.setAttribute("aria-pressed", "false");
     }
   }
 
-  // Escuta os eventos do áudio
   audio.addEventListener("play", syncIcons);
   audio.addEventListener("playing", syncIcons);
   audio.addEventListener("pause", syncIcons);
   audio.addEventListener("ended", syncIcons);
 
-  function loadSong(index) {
+  function loadSong(index, { autoplay = false } = {}) {
     if (!playlist[index]) return;
     const fileName = playlist[index];
-    const newSrc = `assets/music/${fileName}`;
-    const currentSrc = source.getAttribute("src");
+    const newSrc = `assets/music/${encodeURI(fileName)}`;
+    const currentSrcRaw = source.getAttribute("src");
+    const currentSrc = currentSrcRaw
+      ? `assets/music/${encodeURI(
+          decodeURIComponent(currentSrcRaw.replace(/^assets\/music\//, "")),
+        )}`
+      : "";
 
     let displayName = fileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
     if (trackName) trackName.textContent = displayName;
 
-    if (currentSrc === newSrc) return;
+    const isSameTrack = normalize(currentSrc) === normalize(newSrc);
 
-    const wasPlaying = !audio.paused;
+    if (isSameTrack) {
+      if (autoplay || playRequested) {
+        audio
+          .play()
+          .then(syncIcons)
+          .catch(() => showAutoplayFallback());
+      }
+      return;
+    }
+
+    const wasPlaying = !audio.paused || playRequested;
     source.setAttribute("src", newSrc);
     audio.load();
 
     if (wasPlaying) {
-      audio.play().catch((e) => console.warn("Autoplay bloqueado:", e));
+      audio.addEventListener(
+        "canplay",
+        () => {
+          audio
+            .play()
+            .then(syncIcons)
+            .catch(() => showAutoplayFallback());
+        },
+        { once: true },
+      );
     }
   }
 
-  loadSong(currentIndex);
-
   function togglePlay() {
-    if (audio.paused)
-      audio.play().catch((e) => console.warn("Autoplay bloqueado:", e));
-    else audio.pause();
+    if (audio.paused) {
+      playRequested = true;
+      audio
+        .play()
+        .then(syncIcons)
+        .catch(() => showAutoplayFallback());
+    } else {
+      audio.pause();
+    }
   }
 
   if (btnPlayPause) btnPlayPause.addEventListener("click", togglePlay);
@@ -499,36 +543,43 @@ async function initMusicPlayer() {
   if (btnNext) {
     btnNext.addEventListener("click", () => {
       currentIndex = (currentIndex + 1) % playlist.length;
-      loadSong(currentIndex);
-      audio.play();
+      playRequested = true;
+      loadSong(currentIndex, { autoplay: true });
     });
   }
 
   if (btnPrev) {
     btnPrev.addEventListener("click", () => {
       currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-      loadSong(currentIndex);
-      audio.play();
+      playRequested = true;
+      loadSong(currentIndex, { autoplay: true });
     });
   }
 
   if (btnRestart) {
     btnRestart.addEventListener("click", () => {
       audio.currentTime = 0;
-      if (audio.paused) audio.play();
+      if (audio.paused) audio.play().catch(() => showAutoplayFallback());
     });
   }
 
   audio.removeAttribute("loop");
   audio.addEventListener("ended", () => {
     currentIndex = (currentIndex + 1) % playlist.length;
-    loadSong(currentIndex);
-    audio.play();
+    playRequested = true;
+    loadSong(currentIndex, { autoplay: true });
   });
 
   audio.addEventListener("loadedmetadata", () => {
     if (timeTotal) timeTotal.textContent = formatTime(audio.duration);
-    syncIcons(); // Sincroniza ao carregar a faixa
+    syncIcons();
+  });
+
+  audio.addEventListener("error", () => {
+    console.error(
+      "Erro ao carregar áudio, verifique se o arquivo existe em assets/music/:",
+      source.getAttribute("src"),
+    );
   });
 
   audio.addEventListener("timeupdate", () => {

@@ -52,7 +52,7 @@ export default async (req, res) => {
       return res.status(200).json({
         moments: momentsRaw ? JSON.parse(momentsRaw) : [],
         musicFiles: files,
-        activeMusic: activeFile || "Um_Amor_Puro.mp3",
+        activeMusic: activeFile || "Só Você - Tim Maia.mp3",
       });
     } catch (err) {
       return res.status(500).json({ error: "Erro ao carregar dados do admin." });
@@ -74,10 +74,10 @@ export default async (req, res) => {
 
   // --- MÚSICAS: GET ATIVA ---
   if (req.query.action === "get-active-music") {
-    const activeFile = db ? await db.get("active-music") : "Um_Amor_Puro.mp3";
+    const activeFile = db ? await db.get("active-music") : "Só Você - Tim Maia.mp3";
     return res
       .status(200)
-      .json({ activeFile: activeFile || "Um_Amor_Puro.mp3" });
+      .json({ activeFile: activeFile || "Só Você - Tim Maia.mp3" });
   }
 
   // --- MÚSICAS: SET ATIVA ---
