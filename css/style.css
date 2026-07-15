@@ -388,10 +388,11 @@ img {
   /* Gradient background */
   background: linear-gradient(
     170deg,
-    #F7F0E6 0%,
-    #EDE3D5 40%,
-    #E0CDB8 75%,
-    #D4B59A 100%
+    #F9F3EB 0%,
+    #EDE3D5 35%,
+    #E2CEBC 65%,
+    #D8B8A0 85%,
+    #CFA886 100%
   );
 }
 
@@ -646,7 +647,7 @@ img {
 
 @keyframes num-shimmer {
   from { text-shadow: 0 0 8px rgba(255,255,255,0);   }
-  to   { text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+  to   { text-shadow: 0 0 24px rgba(255,255,255,0.28); }
 }
 
 .counter__label {
@@ -735,8 +736,8 @@ img {
   border-radius: var(--radius-md);
   overflow: hidden;
   box-shadow:
-    0 8px 30px rgba(59,35,20,0.12),
-    0 2px 8px rgba(59,35,20,0.08);
+    0 10px 35px rgba(59,35,20,0.16),
+    0 3px 10px rgba(59,35,20,0.10);
   /* Hover lift */
   transition: transform var(--dur-med) var(--ease-smooth),
               box-shadow var(--dur-med) var(--ease-smooth);
@@ -798,7 +799,7 @@ img {
   display: grid;
   /* Responsive: 1 column → 2 → 3 */
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 
 .gallery__item {
@@ -1346,7 +1347,7 @@ img {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  border: 2px solid rgba(92,61,46,0.2);
+  border: 2px solid rgba(92,61,46,0.28);
   background: var(--clr-surface);
   color: var(--clr-brown);
   box-shadow:
