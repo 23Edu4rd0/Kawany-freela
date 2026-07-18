@@ -446,11 +446,13 @@ img {
   display: block;
 }
 /* canto sup-esq */
-.env-heart:nth-child(1) { top: -12px; left: 12%;  animation-delay: 0s;    animation-duration: 3.5s; }
+.env-heart:nth-child(1) { top: -34px; left: -6%;  animation-delay: 0s;    animation-duration: 3.5s; }
 /* canto sup-dir */
-.env-heart:nth-child(2) { top: -16px; right: 12%; animation-delay: 0.8s;  animation-duration: 3s;   }
+.env-heart:nth-child(2) { top: -40px; right: -6%; animation-delay: 0.8s;  animation-duration: 3s;   }
 /* canto inf-dir */
-.env-heart:nth-child(3) { bottom: -12px; right: 12%; animation-delay: 1.4s; animation-duration: 4s; }
+.env-heart:nth-child(3) { bottom: -34px; right: -6%; animation-delay: 1.4s; animation-duration: 4s; }
+/* canto inf-esq */
+.env-heart:nth-child(4) { bottom: -30px; left: -6%; animation-delay: 2.1s; animation-duration: 3.7s; }
 
 @keyframes env-float {
   0%, 100% { transform: translateY(0)     rotate(-8deg);  opacity: 0.75; }
