@@ -204,20 +204,19 @@ img {
 }
 
 /* ── Envelope card ── */
+/* Estrutura em camadas:
+   .intro-envelope        → wrapper externo (flutua, guarda os corações, nunca clipa nada)
+   .intro-envelope__inner → clipa o papel enquanto fechado; libera quando abre
+   .intro-envelope__pocket→ o "bolso" de trás do envelope (fundo)
+   .intro-envelope__paper → o papel da carta, começa escondido dentro e desliza pra fora
+   .intro-envelope__flap  → aba triangular que gira revelando o papel
+*/
 .intro-envelope {
   position: relative;
   width: min(360px, 90vw);
   aspect-ratio: 3 / 2;
-  background: var(--clr-surface);
-  border-radius: var(--radius-md);
-  box-shadow:
-    0 25px 60px rgba(0,0,0,0.35),
-    0 0 0 1px rgba(255,255,255,0.08);
-  display: flex;
-  align-items: flex-end;
-  overflow: visible;
-  perspective: 1000px; /* Habilita efeito 3D para a aba */
-  transform-style: preserve-3d;
+  overflow: visible; /* corações e o papel (ao subir) nunca são cortados aqui */
+  perspective: 1000px; /* fica no wrapper externo, não no que tem overflow:hidden */
   animation: envelope-float 4s ease-in-out infinite;
 }
 
@@ -226,45 +225,164 @@ img {
   50%       { transform: translateY(-8px); }
 }
 
+.intro-envelope__inner {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+  box-shadow:
+    0 30px 70px rgba(28, 15, 8, 0.45),
+    0 8px 20px rgba(28, 15, 8, 0.25);
+  overflow: hidden; /* mantém o papel escondido dentro do envelope enquanto fechado */
+  /* IMPORTANTE: transform-style:preserve-3d NÃO fica aqui — em vários navegadores
+     ele quebra o clip do overflow:hidden no mesmo elemento. Fica só na .flap. */
+}
+
+/* Ao abrir, libera o clipe pra o papel poder subir e ultrapassar a borda do envelope */
+.intro-envelope.is-opening .intro-envelope__inner {
+  overflow: visible;
+}
+
+/* Bolso de trás do envelope */
+.intro-envelope__pocket {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, var(--clr-surface) 0%, var(--clr-bg-alt) 100%);
+  border: 1px solid rgba(198, 169, 122, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  z-index: 0;
+}
+.intro-envelope__pocket::before {
+  /* vinheta bem sutil pra dar profundidade, sem padrão cruzado */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 10%, rgba(255,255,255,0.5) 0%, transparent 60%);
+}
+
+/* O papel da carta — começa recolhido dentro do envelope */
+.intro-envelope__paper {
+  position: absolute;
+  left: 50%;
+  top: 78%;
+  width: 80%;
+  z-index: 1;
+  padding: var(--space-md) var(--space-sm) var(--space-lg);
+  background: var(--clr-surface);
+  border: 1px solid rgba(198, 169, 122, 0.35);
+  border-radius: 3px;
+  box-shadow:
+    0 4px 10px rgba(59,35,20,0.10),
+    0 18px 40px rgba(59,35,20,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%) scale(0.9);
+  opacity: 0;
+  transition:
+    top 1s cubic-bezier(0.22, 1, 0.36, 1) 0.35s,
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1) 0.35s,
+    opacity 0.5s var(--ease-smooth) 0.35s;
+}
+
+/* (linha de dobra decorativa removida — cruzava o nome "Vitor") */
+
+/* Cantos ornamentais nos 4 vértices do papel — elementos reais (não pseudo)
+   porque ::before já está ocupado com a linha de dobra acima */
+.intro-envelope__corner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: rgba(198, 169, 122, 0.6);
+  pointer-events: none;
+}
+.intro-envelope__corner--tl {
+  top: 8px;
+  left: 8px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+  border-radius: 4px 0 0 0;
+}
+.intro-envelope__corner--tr {
+  top: 8px;
+  right: 8px;
+  border-top: 1px solid;
+  border-right: 1px solid;
+  border-radius: 0 4px 0 0;
+}
+.intro-envelope__corner--bl {
+  bottom: 8px;
+  left: 8px;
+  border-bottom: 1px solid;
+  border-left: 1px solid;
+  border-radius: 0 0 0 4px;
+}
+.intro-envelope__corner--br {
+  bottom: 8px;
+  right: 8px;
+  border-bottom: 1px solid;
+  border-right: 1px solid;
+  border-radius: 0 0 4px 0;
+}
+
+/* Ao abrir: papel sobe de dentro do envelope até o tamanho final, sem inclinar */
+.intro-envelope.is-opening .intro-envelope__paper {
+  top: 8%;
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
+
 /* Envelope flap (triangle on top) */
 .intro-envelope__flap {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 55%;
-  background: var(--clr-bg-alt);
+  background: linear-gradient(165deg, var(--clr-bg-alt) 0%, #EDE0C8 100%);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
   z-index: 2;
   transform-origin: top;
+  transform-style: preserve-3d;
   transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Quando abrindo, a aba gira 180 graus para cima */
+/* Selo delicado — fixo na ponta exata da aba (vértice do triângulo) */
+.intro-envelope__seal {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 24px;
+  height: 24px;
+  transform: translate(-50%, -50%);
+  background: var(--clr-surface);
+  border: 1.5px solid rgba(192, 113, 79, 0.55);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(59,35,20,0.18);
+  transition: opacity 0.4s var(--ease-smooth);
+  pointer-events: none;
+}
+.intro-envelope__seal::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  background: var(--clr-terra);
+  clip-path: polygon(50% 15%, 61% 0%, 78% 0%, 90% 12%, 90% 30%, 50% 68%, 10% 30%, 10% 12%, 22% 0%, 39% 0%);
+}
+
+/* Quando abrindo, a aba gira 180 graus para cima e o selo some */
 .intro-envelope.is-opening .intro-envelope__flap {
   transform: rotateX(180deg);
 }
-
-.intro-envelope__body {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  padding: var(--space-md) var(--space-lg) var(--space-lg);
-  text-align: center;
-  opacity: 0; /* Começa invisível para ocultar o texto antes de abrir */
-  transform: translateY(25px); /* Posição inicial levemente abaixo */
-  transition: opacity 0.8s var(--ease-smooth) 0.2s, transform 0.8s var(--ease-smooth) 0.2s; /* Atraso leve para dar tempo da aba começar a abrir */
-}
-
-/* Quando abrindo, o texto interno surge deslizando para cima */
-.intro-envelope.is-opening .intro-envelope__body {
-  opacity: 1;
-  transform: translateY(-8px);
+.intro-envelope.is-opening .intro-envelope__seal {
+  opacity: 0;
 }
 
 .intro-label {
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: clamp(1rem, 3.5vw, 1.25rem);
+  font-size: clamp(0.95rem, 3.2vw, 1.15rem);
   color: var(--clr-brown-md);
   letter-spacing: 0.1em;
   margin-bottom: var(--space-xs);
@@ -273,34 +391,70 @@ img {
 
 .intro-names {
   font-family: var(--font-display);
-  font-size: clamp(2.8rem, 11vw, 4rem);
+  font-size: clamp(2.4rem, 9.5vw, 3.4rem);
   color: var(--clr-brown);
   font-weight: 400;
   line-height: 1;
   text-align: center;
 }
 
+/* Divisor fino com coração entre o nome e o subtítulo */
+.intro-envelope__divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  margin: var(--space-sm) auto;
+  width: 120px;
+}
+.intro-envelope__divider span {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(192,113,79,0.45));
+}
+.intro-envelope__divider span:last-child {
+  background: linear-gradient(to left, transparent, rgba(192,113,79,0.45));
+}
+.intro-envelope__divider svg {
+  width: 10px;
+  height: 10px;
+  color: var(--clr-terra);
+  flex-shrink: 0;
+}
+
 .intro-subtitle {
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: clamp(0.9rem, 3vw, 1.1rem);
+  font-size: clamp(0.85rem, 2.8vw, 1rem);
   color: var(--clr-text-muted);
-  margin-top: var(--space-xs);
   text-align: center;
 }
 
-/* Floating hearts around envelope */
+/* Floating hearts around envelope — SVG na paleta terra/dourada, discretos */
 .env-heart {
   position: absolute;
-  font-size: 1.2rem;
+  width: 15px;
+  height: 15px;
+  color: #D9A15C;
+  filter: drop-shadow(0 2px 4px rgba(59,35,20,0.25));
+  pointer-events: none;
   animation: env-float 3s ease-in-out infinite;
 }
-.env-heart:nth-child(1) { top: -20px; left: -10px; animation-delay: 0s;    animation-duration: 3.5s; }
-.env-heart:nth-child(2) { top: -30px; right: -5px;  animation-delay: 0.8s; animation-duration: 3s;   }
-.env-heart:nth-child(3) { bottom: -15px; right: -20px; animation-delay: 1.4s; animation-duration: 4s; }
+.env-heart svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* canto sup-esq */
+.env-heart:nth-child(1) { top: -12px; left: 12%;  animation-delay: 0s;    animation-duration: 3.5s; }
+/* canto sup-dir */
+.env-heart:nth-child(2) { top: -16px; right: 12%; animation-delay: 0.8s;  animation-duration: 3s;   }
+/* canto inf-dir */
+.env-heart:nth-child(3) { bottom: -12px; right: 12%; animation-delay: 1.4s; animation-duration: 4s; }
+
 @keyframes env-float {
-  0%, 100% { transform: translateY(0) rotate(-10deg); }
-  50%       { transform: translateY(-12px) rotate(10deg); }
+  0%, 100% { transform: translateY(0)     rotate(-8deg);  opacity: 0.75; }
+  50%       { transform: translateY(-10px) rotate(8deg);   opacity: 1;    }
 }
 
 /* ── Open button ── */
@@ -309,18 +463,30 @@ img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem 2.5rem;
+  gap: 0.5em;
+  padding: 0.9rem 2.2rem;
   background: transparent;
-  border: 2px solid rgba(255,255,255,0.5);
+  border: 1.5px solid rgba(255,255,255,0.45);
   border-radius: 9999px;
   color: #fff;
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: clamp(1rem, 3vw, 1.2rem);
+  font-size: clamp(1rem, 3vw, 1.15rem);
   letter-spacing: 0.06em;
   cursor: pointer;
   overflow: hidden;
-  transition: border-color var(--dur-fast), background var(--dur-fast), opacity var(--dur-med) var(--ease-smooth), transform var(--dur-med) var(--ease-smooth);
+  transition: border-color var(--dur-fast), background var(--dur-fast),
+              opacity var(--dur-med) var(--ease-smooth),
+              transform var(--dur-med) var(--ease-smooth);
+}
+
+/* Ícone SVG inline no botão — alinhado com o texto */
+.btn-open__icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 1.1em;
+  height: 1.1em;
 }
 
 .btn-open:hover,
@@ -1008,40 +1174,39 @@ img {
   position: relative;
   background: var(--clr-surface);
   border-radius: var(--radius-md);
-  padding: clamp(2rem, 6vw, 4rem);
-  max-width: 680px;
+  padding: clamp(2.2rem, 6vw, 4.5rem);
+  max-width: 640px;
   width: 100%;
+  border: 1px solid rgba(198, 169, 122, 0.25);
   box-shadow:
-    0 4px 6px rgba(59,35,20,0.05),
-    0 20px 60px rgba(59,35,20,0.10),
-    inset 0 1px 0 rgba(255,255,255,0.8);
-  /* Aged-paper feel with a subtle gradient */
+    0 1px 2px rgba(59,35,20,0.04),
+    0 18px 45px rgba(59,35,20,0.07),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  /* Papel envelhecido, textura muito sutil */
   background-image:
-    linear-gradient(
-      to bottom,
-      rgba(192,113,79,0.04) 0%,
-      transparent 50%
-    );
+    radial-gradient(ellipse at top, rgba(192,113,79,0.05) 0%, transparent 55%),
+    radial-gradient(ellipse at bottom, rgba(198,169,122,0.06) 0%, transparent 60%);
   transition: all 0.8s var(--ease-smooth);
   overflow: hidden;
 }
 
 /* ESTADO FECHADO (ENVELOPE VINTAGE) */
 .letter__paper.letter__paper--closed {
-  max-width: 500px;
-  min-height: 280px;
+  max-width: 460px;
+  min-height: 260px;
   cursor: pointer;
-  border: 1px dashed rgba(192, 113, 79, 0.35);
+  border: 1px dashed rgba(198, 169, 122, 0.4);
   box-shadow:
-    0 6px 15px rgba(59,35,20,0.06),
-    0 25px 60px rgba(59,35,20,0.12);
+    0 4px 10px rgba(59,35,20,0.04),
+    0 20px 45px rgba(59,35,20,0.08);
 }
 
 .letter__paper.letter__paper--closed:hover {
-  transform: translateY(-5px) scale(1.02);
+  transform: translateY(-4px);
+  border-color: rgba(192, 113, 79, 0.5);
   box-shadow:
-    0 12px 25px rgba(59,35,20,0.08),
-    0 35px 80px rgba(59,35,20,0.16);
+    0 8px 18px rgba(59,35,20,0.06),
+    0 28px 60px rgba(59,35,20,0.11);
 }
 
 /* CAPA DA CARTA FECHADA */
@@ -1067,54 +1232,65 @@ img {
   pointer-events: none;
 }
 
-/* Sêlo de cera animado */
+/* Selo delicado — coração fino em vez de emoji grande */
 .letter__cover-seal {
-  font-size: 3.5rem;
+  width: 2.6rem;
+  height: 2.6rem;
   margin-bottom: var(--space-md);
+  color: var(--clr-terra);
   cursor: pointer;
   user-select: none;
-  animation: seal-pulse-scale 2.5s ease-in-out infinite;
+  animation: seal-pulse-scale 3s ease-in-out infinite;
+}
+.letter__cover-seal svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 @keyframes seal-pulse-scale {
   0%, 100% {
     transform: scale(1);
-    filter: drop-shadow(0 2px 8px rgba(192, 113, 79, 0.35));
+    filter: drop-shadow(0 1px 4px rgba(192, 113, 79, 0.25));
   }
   50% {
-    transform: scale(1.08);
-    filter: drop-shadow(0 6px 18px rgba(192, 113, 79, 0.65));
+    transform: scale(1.06);
+    filter: drop-shadow(0 4px 12px rgba(192, 113, 79, 0.4));
   }
 }
 
 .letter__cover-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.2rem, 4vw, 1.6rem);
-  color: var(--clr-brown);
-  margin-bottom: var(--space-md);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.05rem, 3.5vw, 1.3rem);
+  color: var(--clr-brown-md);
+  letter-spacing: 0.02em;
+  margin-bottom: var(--space-lg);
   font-weight: 400;
 }
 
+/* Botão delicado — contorno fino, itálico, alinhado ao resto do site */
 .letter__cover-btn {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  background-color: var(--clr-terra);
-  color: #fff;
-  border: none;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  background: transparent;
+  color: var(--clr-brown);
+  border: 1px solid rgba(192, 113, 79, 0.4);
   border-radius: 50px;
-  padding: 0.75rem 1.75rem;
+  padding: 0.7rem 1.9rem;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(192,113,79,0.3);
   transition: all 0.3s ease;
 }
 
 .letter__cover-btn:hover {
-  background-color: var(--clr-brown);
+  background-color: var(--clr-terra);
+  border-color: var(--clr-terra);
+  color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(59,35,20,0.4);
+  box-shadow: 0 8px 20px rgba(192,113,79,0.25);
 }
 
 /* CONTEÚDO DA CARTA (REVELADO AO ABRIR) */
@@ -1134,51 +1310,56 @@ img {
   opacity: 0;
 }
 
-/* Decorative corner flourishes */
+/* Decorative corner flourishes — mais finas e discretas */
 .letter__corner {
   position: absolute;
-  width: 45px; /* Ligeiramente maior para mostrar os detalhes do arabesco */
-  height: 45px;
-  color: #C6A97A; /* Cor ouro envelhecido, suave e puxando pro marrom */
-  opacity: 0.7;
+  width: 34px;
+  height: 34px;
+  color: #C6A97A;
+  opacity: 0.45;
   transition: opacity var(--dur-med) var(--ease-smooth);
 }
 .letter__corner svg {
   width: 100%;
   height: 100%;
   display: block;
+  stroke-width: 1;
 }
-.letter__corner--tl { top: 14px; left: 14px; }
-.letter__corner--tr { top: 14px; right: 14px; transform: rotate(90deg); }
-.letter__corner--bl { bottom: 14px; left: 14px; transform: rotate(270deg); }
-.letter__corner--br { bottom: 14px; right: 14px; transform: rotate(180deg); }
-
-/* Wax seal */
-.letter__seal {
-  font-size: 2.5rem;
-  text-align: center;
-  margin-bottom: var(--space-md);
-  animation: seal-glow 3s ease-in-out infinite;
-}
-@keyframes seal-glow {
-  0%, 100% { filter: drop-shadow(0 2px 8px rgba(192,113,79,0.3)); }
-  50%       { filter: drop-shadow(0 4px 16px rgba(192,113,79,0.6)); }
-}
+.letter__corner--tl { top: 16px; left: 16px; }
+.letter__corner--tr { top: 16px; right: 16px; transform: rotate(90deg); }
+.letter__corner--bl { bottom: 16px; left: 16px; transform: rotate(270deg); }
+.letter__corner--br { bottom: 16px; right: 16px; transform: rotate(180deg); }
 
 .letter__heading {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 6vw, 3rem);
+  font-size: clamp(1.8rem, 5.5vw, 2.6rem);
   color: var(--clr-brown);
   font-weight: 400;
-  margin-bottom: var(--space-lg);
   text-align: center;
+  margin-bottom: var(--space-sm);
+}
+
+/* Divisor ornamental fino entre o título e o texto */
+.letter__heading::after {
+  content: '';
+  display: block;
+  width: 64px;
+  height: 1px;
+  margin: var(--space-md) auto var(--space-lg);
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(192, 113, 79, 0.5),
+    transparent
+  );
 }
 
 .letter__body {
   font-family: var(--font-serif);
-  font-size: clamp(1rem, 2.5vw, 1.15rem);
+  font-size: clamp(1rem, 2.3vw, 1.1rem);
   color: var(--clr-text);
-  line-height: 1.85;
+  line-height: 1.95;
+  letter-spacing: 0.01em;
   white-space: pre-line; /* respect newlines in the text */
 }
 
@@ -1188,6 +1369,7 @@ img {
   animation: cursor-blink 0.8s step-end infinite;
   color: var(--clr-terra);
   opacity: 0; /* hidden until typewriter starts */
+  font-weight: 300;
 }
 .letter__text.is-typing::after {
   opacity: 1;
@@ -1207,15 +1389,34 @@ img {
   color: var(--clr-brown-md);
   margin-top: var(--space-xl);
   text-align: right;
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  position: relative;
+  padding-top: var(--space-md);
 }
+
+/* Filete fino acima da assinatura, alinhado à direita */
+.letter__signature::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 46px;
+  height: 1px;
+  background: linear-gradient(
+    to left,
+    rgba(192, 113, 79, 0.55),
+    transparent
+  );
+}
+
 .letter__signature strong {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   display: block;
   font-weight: 400;
   color: var(--clr-brown);
+  margin-top: 0.15em;
 }
 
 /* ─────────────────────────────────────────────
