@@ -386,7 +386,7 @@ function initNextAnniversary() {
     const dDays = Math.floor(diff / 86_400_000);
     const dHours = Math.floor((diff % 86_400_000) / 3_600_000);
     const dMins = Math.floor((diff % 3_600_000) / 60_000);
-
+    
     const parts = [];
     if (dDays > 0) parts.push(`${dDays} dia${dDays !== 1 ? "s" : ""}`);
     if (dHours > 0) parts.push(`${dHours} hora${dHours !== 1 ? "s" : ""}`);
