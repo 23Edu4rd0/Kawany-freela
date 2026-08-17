@@ -1,5 +1,5 @@
 const CONFIG = {
-  startDate: "2025-07-19",
+  startDate: "2026-08-17",
   typewriterSpeed: 28,
 };
 
