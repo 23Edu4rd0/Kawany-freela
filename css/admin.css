@@ -390,11 +390,16 @@ textarea {
   max-height: 220px;
   display: none;
 }
+#image-preview video,
 #image-preview img {
   width: 100%;
   height: 220px;
   object-fit: cover;
   display: block;
+}
+#image-preview video[hidden],
+#image-preview img[hidden] {
+  display: none;
 }
 .btn {
   padding: 0.85rem 2rem;
@@ -577,6 +582,7 @@ textarea {
   flex-shrink: 0;
   overflow: hidden;
 }
+.item-card__thumb video,
 .item-card__thumb img {
   width: 100%;
   height: 100%;
@@ -744,6 +750,7 @@ textarea {
     max-height: 180px;
   }
 
+  #image-preview video,
   #image-preview img {
     height: 180px;
   }

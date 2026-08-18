@@ -11,6 +11,7 @@ const addForm = document.getElementById("add-form");
 const imageInput = document.getElementById("image-input");
 const uploadZone = document.getElementById("upload-zone");
 const previewImg = document.getElementById("preview-img");
+const previewVideo = document.getElementById("preview-video");
 const imagePreview = document.getElementById("image-preview");
 const itemTitle = document.getElementById("item-title");
 const itemDate = document.getElementById("item-date");
@@ -23,6 +24,7 @@ const musicSaveBtn = document.getElementById("music-save-btn");
 const musicAlert = document.getElementById("music-alert");
 
 let currentImageBase64 = "";
+let currentMediaType = "image";
 
 // Auto-unlock if already authenticated this session
 if (sessionStorage.getItem("admin_auth") === "true") unlock();
@@ -89,14 +91,42 @@ uploadZone.addEventListener("drop", (e) => {
   e.preventDefault();
   uploadZone.classList.remove("drag-over");
   const file = e.dataTransfer.files[0];
-  if (file && file.type.startsWith("image/")) handleFile(file);
+  if (file && (file.type.startsWith("image/") || file.type.startsWith("video/")))
+    handleFile(file);
 });
 
 function handleFile(file) {
+  const isVideo = file.type.startsWith("video/");
+
   if (file.size > MAX_SIZE) {
-    showAlert("Imagem muito grande. Máximo 5 MB.", "error");
+    showAlert(
+      isVideo
+        ? "Vídeo muito grande. Máximo 5 MB — tente cortar ou comprimir."
+        : "Imagem muito grande. Máximo 5 MB.",
+      "error",
+    );
     return;
   }
+
+  if (isVideo) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      currentImageBase64 = e.target.result;
+      currentMediaType = "video";
+      previewVideo.src = currentImageBase64;
+      previewVideo.hidden = false;
+      previewImg.hidden = true;
+      previewImg.removeAttribute("src");
+      imagePreview.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+    return;
+  }
+
+  currentMediaType = "image";
+  previewVideo.hidden = true;
+  previewVideo.removeAttribute("src");
+  previewImg.hidden = false;
 
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -150,6 +180,7 @@ addForm.addEventListener("submit", async (e) => {
     date: itemDate.value.trim(),
     description: itemDesc.value.trim(),
     imageBase64: currentImageBase64,
+    mediaType: currentMediaType,
     destination,
     createdAt: new Date().toISOString(),
   };
@@ -181,8 +212,12 @@ addForm.addEventListener("submit", async (e) => {
 
   addForm.reset();
   currentImageBase64 = "";
+  currentMediaType = "image";
   imagePreview.style.display = "none";
   previewImg.src = "";
+  previewVideo.removeAttribute("src");
+  previewVideo.hidden = true;
+  previewImg.hidden = false;
   renderList();
 });
 
@@ -226,7 +261,13 @@ function renderItems(items) {
     div.className = "item-card";
     div.setAttribute("role", "listitem");
     div.innerHTML = `
-      <div class="item-card__thumb">${item.imageBase64 ? `<img src="${item.imageBase64}" alt="" loading="lazy" />` : "📷"}</div>
+      <div class="item-card__thumb">${
+        !item.imageBase64
+          ? "📷"
+          : item.mediaType === "video"
+            ? `<video src="${item.imageBase64}" muted playsinline preload="metadata"></video>`
+            : `<img src="${item.imageBase64}" alt="" loading="lazy" />`
+      }</div>
       <div class="item-card__info">
         <div class="item-card__title">${esc(item.title)}</div>
         <div class="item-card__meta"><span class="item-card__badge ${badgeClass}">${badgeLabel}</span>${item.date ? "· " + esc(item.date) : ""}</div>

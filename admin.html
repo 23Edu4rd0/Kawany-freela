@@ -40,23 +40,24 @@
         <h2>Adicionar Novo Momento</h2>
         <form id="add-form" novalidate>
           <div class="form-group">
-            <label>Foto</label>
+            <label>Foto ou Vídeo</label>
             <div class="upload-zone" id="upload-zone">
               <input
                 type="file"
                 id="image-input"
-                accept="image/jpeg,image/png,image/webp,image/gif"
+                accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
               />
               <div class="upload-zone__icon">🖼️</div>
               <div class="upload-zone__text">
-                Clique ou arraste uma foto aqui
+                Clique ou arraste uma foto ou vídeo aqui
               </div>
               <div class="upload-zone__hint">
-                JPEG, PNG, WebP ou GIF · máx 5 MB
+                JPEG, PNG, WebP, GIF, MP4, WebM ou MOV · máx 5 MB
               </div>
             </div>
             <div id="image-preview">
               <img id="preview-img" src="" alt="Preview" />
+              <video id="preview-video" src="" controls playsinline hidden></video>
             </div>
           </div>
           <div class="form-group">

@@ -1008,18 +1008,46 @@ img {
   opacity: 1;
 }
 
-.gallery__img {
+.gallery__img,
+.gallery__media {
+  display: block;
   width: 100%;
   aspect-ratio: 3 / 2;
   object-fit: cover;
   transition: transform var(--dur-slow) var(--ease-smooth);
 }
+
+/* Selo de "play" sobre os vídeos da galeria */
+.gallery__play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  color: #3b2314;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  padding-left: 4px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity var(--dur-med) var(--ease-smooth);
+}
+.gallery__btn:hover .gallery__play,
+.gallery__btn:focus-visible .gallery__play {
+  opacity: 0;
+}
 /* Hover zoom só funciona em dispositivos com mouse/trackpad;
    em touch os estados :hover ficam "presos" até o próximo tap —
    por isso só ativamos em telas que suportam hover real */
 @media (hover: hover) {
-  .gallery__btn:hover .gallery__img,
-  .gallery__btn:focus-visible .gallery__img {
+  .gallery__btn:hover .gallery__media,
+  .gallery__btn:focus-visible .gallery__media {
     transform: scale(1.06);
   }
 }
@@ -1085,6 +1113,15 @@ img {
 @keyframes lb-img-appear {
   from { opacity: 0; transform: scale(0.95); }
   to   { opacity: 1; transform: scale(1);    }
+}
+
+.lightbox__video {
+  width: auto;
+  background: #000;
+}
+.lightbox__img[hidden],
+.lightbox__video[hidden] {
+  display: none;
 }
 
 .lightbox__caption {

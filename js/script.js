@@ -3,6 +3,31 @@ const CONFIG = {
   typewriterSpeed: 28,
 };
 
+// ─── MÍDIA DA GALERIA ────────────────────────────────────────────────────────
+// Para adicionar uma foto: coloque o arquivo em assets/photos/ e some uma linha.
+// Para adicionar um vídeo: coloque o arquivo em assets/videos/ e use
+//   { type: "video", src: "assets/videos/nome.mp4", poster: "assets/photos/capa.jpeg", caption: "..." }
+// O campo "poster" é opcional (é a imagem de capa do vídeo).
+const GALLERY_MEDIA = [
+  { type: "image", src: "assets/photos/foto1.jpeg", caption: "Seu jeitinho doce 🤎" },
+  { type: "video", src: "assets/videos/video1.mp4", caption: "Você faz tudo ficar mais leve" },
+  { type: "image", src: "assets/photos/foto2.jpeg", caption: "Guardo esse sorriso" },
+  { type: "video", src: "assets/videos/video2.mp4", caption: "Sua alegria contagia todo mundo" },
+  { type: "image", src: "assets/photos/foto3.jpeg", caption: "Você ilumina qualquer lugar" },
+  { type: "video", src: "assets/videos/video3.mp4", caption: "Nunca duvide de você" },
+  { type: "image", src: "assets/photos/foto4.jpeg", caption: "Meiga do jeitinho que só você é" },
+  { type: "video", src: "assets/videos/video4.mp4", caption: "Você merece o mundo inteiro" },
+  { type: "image", src: "assets/photos/foto5.jpeg", caption: "Eu te amo 🤎" },
+  { type: "video", src: "assets/videos/video5.mp4", caption: "Estou aqui, sempre" },
+  { type: "image", src: "assets/photos/foto6.jpeg", caption: "Sua força me inspira" },
+  { type: "video", src: "assets/videos/video6.mp4", caption: "Você não está sozinha" },
+  { type: "image", src: "assets/photos/foto7.jpeg", caption: "Continua sendo você" },
+  { type: "video", src: "assets/videos/video7.mp4", caption: "Tudo vai ficar bem, prometo" },
+  { type: "video", src: "assets/videos/video8.mp4", caption: "Seu coração é enorme" },
+  { type: "video", src: "assets/videos/video9.mp4", caption: "Obrigado por existir" },
+  { type: "video", src: "assets/videos/video10.mp4", caption: "Você é insubstituível 🤎" },
+];
+
 let globalRevealObserver = null;
 let isGalleryInitialized = false;
 let galleryImgs = [];
@@ -11,6 +36,7 @@ let currentGalleryIndex = 0;
 document.addEventListener("DOMContentLoaded", () => {
   initParticles();
   initCounter();
+  renderGalleryMedia();
   initScrollReveal();
   initGallery();
   initTypewriter();
@@ -201,9 +227,52 @@ function initScrollReveal() {
 
 // ─── GALLERY ─────────────────────────────────────────────────────────────────
 
+// Monta o HTML de um item da galeria (foto ou vídeo)
+function galleryItemHTML({ type, src, poster, caption, alt }) {
+  const cap = escapeHtml(caption || "");
+  const label = cap || "mídia";
+  const media =
+    type === "video"
+      ? `<video
+            class="gallery__media gallery__video"
+            src="${src}"
+            data-src="${src}"
+            data-type="video"
+            data-caption="${cap}"
+            ${poster ? `poster="${poster}"` : ""}
+            muted
+            playsinline
+            preload="metadata"
+          ></video>
+          <span class="gallery__play" aria-hidden="true">▶</span>`
+      : `<img
+            class="gallery__media gallery__img"
+            src="${src}"
+            data-src="${src}"
+            data-type="image"
+            data-caption="${cap}"
+            alt="${escapeHtml(alt || caption || "Kawany")}"
+            loading="lazy"
+          />`;
+
+  return `<figure class="gallery__item reveal-fade" role="listitem">
+      <button class="gallery__btn" aria-label="Abrir ${escapeHtml(label)} em tamanho completo">
+        ${media}
+      </button>
+    </figure>`;
+}
+
+// Renderiza a galeria a partir de GALLERY_MEDIA
+function renderGalleryMedia() {
+  const grid = document.getElementById("gallery-grid");
+  if (!grid) return;
+  grid.innerHTML = GALLERY_MEDIA.map(galleryItemHTML).join("");
+}
+
 function initGallery() {
   const lightbox = document.getElementById("lightbox");
   const lbImg = document.getElementById("lb-img");
+  const lbVideo = document.getElementById("lb-video");
   const lbCaption = document.getElementById("lb-caption");
   const lbPrev = document.getElementById("lb-prev");
   const lbNext = document.getElementById("lb-next");
@@ -211,11 +280,13 @@ function initGallery() {
 
   if (!lightbox) return;
 
-  galleryImgs = Array.from(document.querySelectorAll(".gallery__img")).map(
-    (img) => ({
-      src: img.dataset.src || img.src,
-      alt: img.alt || "",
-      caption: img.dataset.caption || "",
+  galleryImgs = Array.from(document.querySelectorAll(".gallery__media")).map(
+    (el) => ({
+      src: el.dataset.src || el.getAttribute("src"),
+      type: el.dataset.type === "video" ? "video" : "image",
+      poster: el.getAttribute("poster") || "",
+      alt: el.alt || "",
+      caption: el.dataset.caption || "",
     }),
   );
 
@@ -233,21 +304,41 @@ function initGallery() {
       ((index % galleryImgs.length) + galleryImgs.length) % galleryImgs.length;
     const data = galleryImgs[currentGalleryIndex];
 
-    lbImg.style.opacity = "0";
-    lbImg.style.transform = "scale(0.97)";
+    const isVideo = data.type === "video";
+    const active = isVideo ? lbVideo : lbImg;
+    const inactive = isVideo ? lbImg : lbVideo;
+
+    // Pausa/limpa o que estava em cena antes de trocar
+    if (lbVideo) {
+      lbVideo.pause();
+      if (!isVideo) lbVideo.removeAttribute("src");
+    }
+
+    if (inactive) inactive.hidden = true;
+    if (!active) return;
+    active.hidden = false;
+
+    active.style.opacity = "0";
+    active.style.transform = "scale(0.97)";
 
     setTimeout(() => {
-      lbImg.src = data.src;
-      lbImg.alt = data.alt;
+      active.src = data.src;
+      if (isVideo) {
+        if (data.poster) active.setAttribute("poster", data.poster);
+        else active.removeAttribute("poster");
+        active.load();
+      } else {
+        active.alt = data.alt;
+      }
       lbCaption.textContent = data.caption;
-      lbImg.style.transition = "opacity 0.3s ease, transform 0.3s ease";
-      lbImg.style.opacity = "1";
-      lbImg.style.transform = "scale(1)";
+      active.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+      active.style.opacity = "1";
+      active.style.transform = "scale(1)";
     }, 150);
 
     lightbox.setAttribute(
       "aria-label",
-      `Foto ${currentGalleryIndex + 1} de ${galleryImgs.length}`,
+      `${isVideo ? "Vídeo" : "Foto"} ${currentGalleryIndex + 1} de ${galleryImgs.length}`,
     );
   }
 
@@ -264,6 +355,9 @@ function initGallery() {
   lbPrev?.addEventListener("click", () => showImage(currentGalleryIndex - 1));
   lbNext?.addEventListener("click", () => showImage(currentGalleryIndex + 1));
   lbClose?.addEventListener("click", () => lightbox.close());
+
+  // Ao fechar, para o vídeo pra não continuar tocando em segundo plano
+  lightbox.addEventListener("close", () => lbVideo?.pause());
 
   lightbox.addEventListener("keydown", (e) => {
     if (e.key === "ArrowLeft") showImage(currentGalleryIndex - 1);
@@ -435,9 +529,11 @@ async function loadAdminItems() {
       article.innerHTML = `
         <div class="timeline__photo-wrap">
           ${
-            item.imageBase64
-              ? `<img src="${item.imageBase64}" alt="${escapeHtml(item.title)}" class="timeline__photo" loading="lazy" />`
-              : `<div class="timeline__photo-placeholder">📷</div>`
+            !item.imageBase64
+              ? `<div class="timeline__photo-placeholder">📷</div>`
+              : item.mediaType === "video"
+                ? `<video src="${item.imageBase64}" class="timeline__photo" controls playsinline preload="metadata"></video>`
+                : `<img src="${item.imageBase64}" alt="${escapeHtml(item.title)}" class="timeline__photo" loading="lazy" />`
           }
         </div>
         <div class="timeline__content">
@@ -450,20 +546,15 @@ async function loadAdminItems() {
     }
 
     if (isGallery && galleryGrid && item.imageBase64) {
-      const figure = document.createElement("figure");
-      figure.className = "gallery__item reveal-fade";
-      figure.setAttribute("role", "listitem");
-      figure.innerHTML = `
-        <button class="gallery__btn" aria-label="Abrir ${escapeHtml(item.title)} em tamanho completo">
-          <img
-            src="${item.imageBase64}"
-            data-src="${item.imageBase64}"
-            data-caption="${escapeHtml(item.description || item.title)}"
-            alt="${escapeHtml(item.title)}"
-            class="gallery__img"
-            loading="lazy"
-          />
-        </button>`;
+      const wrap = document.createElement("div");
+      wrap.innerHTML = galleryItemHTML({
+        type: item.mediaType === "video" ? "video" : "image",
+        src: item.imageBase64,
+        poster: item.posterBase64 || "",
+        caption: item.description || item.title,
+        alt: item.title,
+      });
+      const figure = wrap.firstElementChild;
       galleryGrid.appendChild(figure);
       globalRevealObserver?.observe(figure);
     }
